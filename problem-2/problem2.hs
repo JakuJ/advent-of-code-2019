@@ -25,7 +25,7 @@ execute = do
     (memory, index) <- get
     let opCode = memory ! index
     
-    if (index < snd (bounds memory) && opCode /= 99) then do
+    if index < snd (bounds memory) && opCode /= 99 then do
         let arg1 = memory ! (index + 1)
         let arg2 = memory ! (index + 2)
         let address = memory ! (index + 3)
