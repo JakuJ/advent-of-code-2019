@@ -1,5 +1,9 @@
+module Problem1 (problem1) where
+
+import ReadInput (readIntegers)
+
 inputs :: IO [Integer]
-inputs = map read . lines <$> readFile "input.txt"
+inputs = readIntegers "input1.txt"
 
 -- PART 1
 
@@ -21,12 +25,13 @@ moduleMass x
 part2 :: IO Integer
 part2 = sum . map moduleMass <$> inputs
 
--- ENTRY POINT
+-- EXPORTED SOLUTION
 
-main :: IO ()
-main = do
-    putStr "Part 1: "
+problem1 :: IO ()
+problem1 = do
+    putStrLn "Problem 1:"
+    putStr "\tPart 1: "
     print =<< part1
-    putStr "Part 2: "
+    putStr "\tPart 2: "
     print =<< part2
     

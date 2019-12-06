@@ -1,0 +1,76 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 2beb6de7b62b20bb1a2d0c55ba7ab2064ebadea4975de0c5166c78a8e571b509
+
+name:           advent2019
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/JakuJ/advent2019#readme>
+homepage:       https://github.com/JakuJ/advent2019#readme
+bug-reports:    https://github.com/JakuJ/advent2019/issues
+author:         Jakub Janaszkiewicz
+maintainer:     janaszkiewicz.jakub@gmail.com
+copyright:      Jakub Janaszkiewicz
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/JakuJ/advent2019
+
+library
+  exposed-modules:
+      Problem1
+      Problem2
+      Problem3
+      ReadInput
+  other-modules:
+      Paths_advent2019
+  hs-source-dirs:
+      src
+  build-depends:
+      array
+    , base >=4.7 && <5
+    , mtl
+    , text
+    , tuple
+  default-language: Haskell2010
+
+executable advent2019
+  main-is: Main.hs
+  other-modules:
+      Paths_advent2019
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      advent2019
+    , array
+    , base >=4.7 && <5
+    , mtl
+    , text
+    , tuple
+  default-language: Haskell2010
+
+test-suite advent-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_advent2019
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      advent2019
+    , array
+    , base >=4.7 && <5
+    , mtl
+    , text
+    , tuple
+  default-language: Haskell2010

@@ -1,13 +1,16 @@
 {-# LANGUAGE OverloadedStrings, TupleSections #-}
 
+module Problem2 (problem2) where
+
+import ReadInput (readCSV)
+
 import Data.Array
-import Data.Text.Lazy (Text, pack, unpack, splitOn)
 import Control.Monad.State.Lazy
 import Data.Bifunctor (bimap)
 import Data.Tuple.Select (sel3)
 
 readCommands :: IO [Int]
-readCommands = map (read . unpack) . splitOn "," . pack <$> readFile "input.txt"
+readCommands = map read . head <$> readCSV "input2.txt"
 
 -- PART 1
 
@@ -64,9 +67,12 @@ part2 = do
     let (noun, verb, _) = head $ filter ((== 19690720) . sel3) allPossible
     return $ 100 * noun + verb
 
-main :: IO ()
-main = do
-    putStr "Part 1: "
+-- EXPORTED SOLUTION
+
+problem2 :: IO ()
+problem2 = do
+    putStrLn "Problem 2:"
+    putStr "\tPart 1: "
     print =<< part1
-    putStr "Part 2: "
+    putStr "\tPart 2: "
     print =<< part2
