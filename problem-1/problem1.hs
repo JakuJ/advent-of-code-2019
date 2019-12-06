@@ -1,7 +1,7 @@
--- PART 1
-
 inputs :: IO [Integer]
 inputs = map read . lines <$> readFile "input.txt"
+
+-- PART 1
 
 fuelMass :: Integer -> Integer
 fuelMass x = (x `div` 3) - 2
