@@ -6,7 +6,7 @@ module ReadInput (
     readCSV
 ) where
 
-import           Data.Text.Lazy (Text, pack, splitOn, unpack)
+import Data.Text.Lazy (Text, pack, splitOn, unpack)
 
 -- Helper functions
 

@@ -3,13 +3,13 @@
 
 module Problem2 (problem2) where
 
-import           Problem                  (problem)
-import           ReadInput                (readCSV)
+import Problem                  (problem)
+import ReadInput                (readCSV)
 
-import           Control.Monad.State.Lazy (State, evalState, get, modify)
-import           Data.Array               (Array, bounds, listArray, (!), (//))
-import           Data.Bifunctor           (bimap)
-import           Data.Tuple.Select        (sel3)
+import Control.Monad.State.Lazy (State, evalState, get, modify)
+import Data.Array               (Array, bounds, listArray, (!), (//))
+import Data.Bifunctor           (bimap)
+import Data.Tuple.Select        (sel3)
 
 readCommands :: IO [Int]
 readCommands = map read . head <$> readCSV "input2.txt"

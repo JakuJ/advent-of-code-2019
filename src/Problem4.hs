@@ -1,9 +1,9 @@
 module Problem4 (problem4) where
 
-import           Problem       (problem)
+import Problem       (problem)
 
-import           Data.Function (on)
-import           Data.List     (group)
+import Data.Function (on)
+import Data.List     (group)
 
 lower, upper :: Int
 (lower, upper) = (136760, 595730)

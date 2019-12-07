@@ -1,7 +1,4 @@
-module Problem (
-    problem
-)
-where
+module Problem (problem) where
 
 problem :: Int -> IO Int -> IO Int -> IO ()
 problem number part1 part2 = do

@@ -1,7 +1,7 @@
 module Problem1 (problem1) where
 
-import           Problem   (problem)
-import           ReadInput (readInts)
+import Problem   (problem)
+import ReadInput (readInts)
 
 inputs :: IO [Int]
 inputs = readInts "input1.txt"
