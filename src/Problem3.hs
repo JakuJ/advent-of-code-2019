@@ -1,13 +1,16 @@
-module Problem3 (problem3) where
+module Problem3 (
+    problem3
+) where
 
-import ReadInput (readCSV)
+import           Problem                  (problem)
+import           ReadInput                (readCSV)
 
-import qualified Data.Map as Map
-import Control.Monad.State.Lazy (State, get, modify, evalState)
-import Data.Maybe (catMaybes, mapMaybe)
-import Data.List (sortOn)
-import Data.Bifunctor (bimap)
-import Data.Function (on)
+import           Control.Monad.State.Lazy (State, evalState, get, modify)
+import           Data.Bifunctor           (bimap)
+import           Data.Function            (on)
+import           Data.List                (sortOn)
+import qualified Data.Map                 as Map
+import           Data.Maybe               (catMaybes, mapMaybe)
 
 type Vector = (Int, Int) -- (change in X direction, change in Y direction)
 type Path = [Vector]
@@ -24,7 +27,7 @@ parseVector (x:xs) = both (* len) direction
             'D' -> (0, -1)
             'L' -> (-1, 0)
             'R' -> (1, 0)
-            _ -> error "Invalid direction"
+            _   -> error "Invalid direction"
 
 type Point = (Int, Int)
 type Segment = (Point, Point)
@@ -38,7 +41,7 @@ pathToWire :: Path -> Wire
 pathToWire = splitPairs . scanl vecAdd (0, 0)
     where
         splitPairs :: [Point] -> [Segment]
-        splitPairs [p1, p2] = [(p1, p2)]
+        splitPairs [p1, p2]   = [(p1, p2)]
         splitPairs (p1:p2:ps) = (p1, p2) : splitPairs (p2 : ps)
 
 inputs :: IO (Path, Path)
@@ -179,9 +182,4 @@ part2 = minimumSteps <$> inputs
 -- EXPORTED SOLUTION
 
 problem3 :: IO ()
-problem3 = do
-    putStrLn "Problem 3:"
-    putStr "\tPart 1: "
-    print =<< part1
-    putStr "\tPart 2: "
-    print =<< part2
+problem3 = problem 3 part1 part2

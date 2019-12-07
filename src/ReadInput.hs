@@ -2,11 +2,11 @@
 
 module ReadInput (
     readLines,
-    readIntegers,
+    readInts,
     readCSV
 ) where
 
-import Data.Text.Lazy (Text, pack, unpack, splitOn)
+import           Data.Text.Lazy (Text, pack, splitOn, unpack)
 
 -- Helper functions
 
@@ -18,8 +18,8 @@ toInputPath = ("inputs/" ++ )
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile (toInputPath path)
 
-readIntegers :: FilePath -> IO [Integer]
-readIntegers path = map read <$> readLines path
+readInts :: FilePath -> IO [Int]
+readInts path = map read <$> readLines path
 
 readCSV :: FilePath -> IO [[String]]
 readCSV path = map splitCSV <$> readLines path

@@ -1,13 +1,15 @@
-{-# LANGUAGE OverloadedStrings, TupleSections #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections     #-}
 
 module Problem2 (problem2) where
 
-import ReadInput (readCSV)
+import           Problem                  (problem)
+import           ReadInput                (readCSV)
 
-import Data.Array (Array, listArray, bounds, (!), (//))
-import Control.Monad.State.Lazy (State, get, modify, evalState)
-import Data.Bifunctor (bimap)
-import Data.Tuple.Select (sel3)
+import           Control.Monad.State.Lazy (State, evalState, get, modify)
+import           Data.Array               (Array, bounds, listArray, (!), (//))
+import           Data.Bifunctor           (bimap)
+import           Data.Tuple.Select        (sel3)
 
 readCommands :: IO [Int]
 readCommands = map read . head <$> readCSV "input2.txt"
@@ -22,12 +24,12 @@ makeMemory list = listArray (0, length list - 1) list
 
 loadProgram :: IO Memory
 loadProgram = makeMemory <$> readCommands
-    
+
 execute :: State Computer Int
 execute = do
     (memory, index) <- get
     let opCode = memory ! index
-    
+
     if index < snd (bounds memory) && opCode /= 99 then do
         let arg1 = memory ! (index + 1)
         let arg2 = memory ! (index + 2)
@@ -70,9 +72,4 @@ part2 = do
 -- EXPORTED SOLUTION
 
 problem2 :: IO ()
-problem2 = do
-    putStrLn "Problem 2:"
-    putStr "\tPart 1: "
-    print =<< part1
-    putStr "\tPart 2: "
-    print =<< part2
+problem2 = problem 2 part1 part2

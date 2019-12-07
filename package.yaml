@@ -16,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/JakuJ/advent2019#readme>
+description:         Please see the README on GitHub at <https://github.com/JakuJ/advent-of-code-2019#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -33,17 +33,6 @@ executables:
   advent2019:
     main:                Main.hs
     source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - advent2019
-
-tests:
-  advent-test:
-    main:                Spec.hs
-    source-dirs:         test
     ghc-options:
     - -threaded
     - -rtsopts
