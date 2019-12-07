@@ -24,6 +24,7 @@ dependencies:
 - mtl
 - tuple
 - array
+- containers
 
 library:
   source-dirs: src

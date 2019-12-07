@@ -4,8 +4,8 @@ module Problem2 (problem2) where
 
 import ReadInput (readCSV)
 
-import Data.Array
-import Control.Monad.State.Lazy
+import Data.Array (Array, listArray, bounds, (!), (//))
+import Control.Monad.State.Lazy (State, get, modify, evalState)
 import Data.Bifunctor (bimap)
 import Data.Tuple.Select (sel3)
 

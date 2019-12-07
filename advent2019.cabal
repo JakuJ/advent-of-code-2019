@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2beb6de7b62b20bb1a2d0c55ba7ab2064ebadea4975de0c5166c78a8e571b509
+-- hash: 8894ad7e94ae7620d5083f915f73664b10dbea0e028e1f456d90102f9a993881
 
 name:           advent2019
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
   build-depends:
       array
     , base >=4.7 && <5
+    , containers
     , mtl
     , text
     , tuple
@@ -53,6 +54,7 @@ executable advent2019
       advent2019
     , array
     , base >=4.7 && <5
+    , containers
     , mtl
     , text
     , tuple
@@ -70,6 +72,7 @@ test-suite advent-test
       advent2019
     , array
     , base >=4.7 && <5
+    , containers
     , mtl
     , text
     , tuple
