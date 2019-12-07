@@ -3,7 +3,13 @@
 
 module IntCode (
     Computer (..),
-    runProgram
+    runComputer,
+    runMemory,
+    runProgram,
+    makeComputer,
+    makeMemory,
+    setAt,
+    getAt
 ) where
 
 import Control.Lens             hiding (index)
@@ -130,6 +136,9 @@ evaluate = do
 
 interpret :: State Computer ()
 interpret = use running >>= flip when (evaluate >> interpret)
+
+runComputer :: Computer -> Computer
+runComputer = execState interpret
 
 runMemory :: Memory -> [Int] -> Computer
 runMemory memory inputs = execState interpret computer

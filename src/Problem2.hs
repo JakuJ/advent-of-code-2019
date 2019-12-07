@@ -1,71 +1,50 @@
-{-# LANGUAGE TupleSections #-}
-
 module Problem2 (problem2) where
 
+import IntCode                  (Computer, getAt, makeComputer, makeMemory,
+                                 runComputer, setAt)
 import Problem                  (problem)
 import ReadInput                (readCSV)
 
-import Control.Monad.State.Lazy (State, evalState, get, modify)
-import Data.Array               (Array, bounds, listArray, (!), (//))
-import Data.Bifunctor           (bimap)
-import Data.Tuple.Select        (sel3)
+import Control.Lens             ((^.), _3)
+import Control.Monad.State.Lazy (evalState, execState)
 
-readCommands :: IO [Int]
-readCommands = map read . head <$> readCSV "input2.txt"
+readProgram :: IO [Int]
+readProgram = map read . head <$> readCSV "input2.txt"
 
 -- PART 1
 
-type Memory = Array Int Int
-type Computer = (Memory, Int)
+initialize :: Int -> Int -> Computer -> Computer
+initialize v1 v2 = execState (setAt 1 v1 >> setAt 2 v2)
 
-makeMemory :: [Int] -> Memory
-makeMemory list = listArray (0, length list - 1) list
+initComputer :: IO Computer
+initComputer = do
+    memory <- makeMemory <$> readProgram
+    return $ makeComputer memory []
 
-loadProgram :: IO Memory
-loadProgram = makeMemory <$> readCommands
+getFirst :: Computer -> Int
+getFirst = evalState (getAt 0)
 
-execute :: State Computer Int
-execute = do
-    (memory, index) <- get
-    let opCode = memory ! index
-
-    if index < snd (bounds memory) && opCode /= 99 then do
-        let arg1 = memory ! (index + 1)
-        let arg2 = memory ! (index + 2)
-        let address = memory ! (index + 3)
-
-        let op = case opCode of 1 -> (+)
-                                2 -> (*)
-                                _ -> error "Invalid opCode"
-
-        modify $ bimap (// [(address, op (memory ! arg1) (memory ! arg2))]) (+4)
-        execute
-    else return $ memory ! 0
-
-initialize :: Int -> Int -> Memory -> Memory
-initialize noun verb = (// [(1, noun), (2, verb)])
-
-evaluate :: Int -> Int -> Memory -> Int
-evaluate noun verb = evalState execute . (, 0) . initialize noun verb
+process :: Int -> Int -> Computer -> Int
+process v1 v2 = getFirst . runComputer . initialize v1 v2
 
 part1 :: IO Int
-part1 = evaluate 12 2 <$> loadProgram
+part1 = process 12 2 <$> initComputer
 
 -- PART 2
 
-evaluateV :: Int -> Int -> Memory -> (Int, Int, Int)
-evaluateV noun verb mem = (noun, verb, evaluate noun verb mem)
+init3 :: Int -> Int -> Computer -> (Int, Int, Int)
+init3 noun verb cmp = (noun, verb, process noun verb cmp)
 
-tryAll :: Memory -> [(Int, Int, Int)]
+tryAll :: Computer -> [(Int, Int, Int)]
 tryAll mem = do
     noun <- [0 .. 99]
     verb <- [0 .. 99]
-    return $ evaluateV noun verb mem
+    return $ init3 noun verb mem
 
 part2 :: IO Int
 part2 = do
-    allPossible <- tryAll <$> loadProgram
-    let (noun, verb, _) = head $ filter ((== 19690720) . sel3) allPossible
+    allPossible <- tryAll <$> initComputer
+    let (noun, verb, _) = head $ filter ((== 19690720) . (^. _3)) allPossible
     return $ 100 * noun + verb
 
 -- EXPORTED SOLUTION
