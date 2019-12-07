@@ -25,6 +25,8 @@ dependencies:
 - tuple
 - array
 - containers
+- lens
+- parsec
 
 library:
   source-dirs: src
