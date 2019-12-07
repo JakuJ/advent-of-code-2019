@@ -33,10 +33,10 @@ init3 :: Int -> Int -> Computer -> (Int, Int, Int)
 init3 noun verb cmp = (noun, verb, process noun verb cmp)
 
 tryAll :: Computer -> [(Int, Int, Int)]
-tryAll mem = do
+tryAll comp = do
     noun <- [0 .. 99]
     verb <- [0 .. 99]
-    return $ init3 noun verb mem
+    return $ init3 noun verb comp
 
 part2 :: IO Int
 part2 = do

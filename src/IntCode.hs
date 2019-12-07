@@ -15,11 +15,9 @@ module IntCode (
 import Control.Lens             hiding (index)
 import Control.Monad.State.Lazy
 import Data.Array               hiding (index)
-import Debug.Trace
 
 -- DATA TYPES
 
-type OpCode = Int
 data Mode = Positional | Immediate
     deriving (Show)
 
@@ -33,9 +31,6 @@ makeLenses ''Computer
 type Operation = [Mode] -> [Int] -> State Computer ()
 
 -- OPCODE HELPERS
-
-getOpCode :: Int -> OpCode
-getOpCode = (`mod` 100)
 
 getDigit :: Int -> String -> Char
 getDigit ix = (!! ix) . (++ repeat '0') . reverse
@@ -101,10 +96,37 @@ pushOutput = (outputs <>=) . pure
 output :: Operation
 output [mode] [arg] = pushOutput =<< getValue mode arg
 
-getOperation :: OpCode -> Operation
-getOperation = \case
-    99 -> halt
-    x -> listArray (1, 4) [add, mult, input, output] ! x
+jumpIf :: (Int -> Bool) -> Operation
+jumpIf pred [m1, m2] [a1, a2] = do
+    check <- pred <$> getValue m1 a1
+    when check $ index <~ getValue m2 a2
+
+jumpIfTrue, jumpIfFalse :: Operation
+jumpIfTrue = jumpIf (/= 0)
+jumpIfFalse = jumpIf (== 0)
+
+comparison :: (Int -> Int -> Bool) -> Operation
+comparison op [m1, m2, _] [a1, a2, addr] = do
+    v1 <- getValue m1 a1
+    v2 <- getValue m2 a2
+    setAt addr $ if v1 `op` v2 then 1 else 0
+
+compareLess, compareEqual :: Operation
+compareLess = comparison (<)
+compareEqual = comparison (==)
+
+getInfo :: Int -> (Operation, Int)
+getInfo op = case op `mod` 100 of
+    99 -> (halt, 0)
+    1  -> (add, 3)
+    2  -> (mult, 3)
+    3  -> (input, 1)
+    4  -> (output, 1)
+    5  -> (jumpIfTrue, 2)
+    6  -> (jumpIfFalse, 2)
+    7  -> (compareLess, 3)
+    8  -> (compareEqual, 3)
+    x  -> error $ "Invalid opcode: " ++ show x
 
 -- EVALUATION
 
@@ -114,25 +136,19 @@ makeMemory list = listArray (0, length list - 1) list
 makeComputer :: Memory -> [Int] -> Computer
 makeComputer mem inputs = Computer mem 0 inputs [] True
 
-numArgs :: OpCode -> Int
-numArgs op
-    | op == 99 = 0
-    | op `elem` [1, 2] = 3
-    | op `elem` [3, 4] = 1
-    | otherwise = error "Unknown operation code"
-
 evaluate :: State Computer ()
 evaluate = do
+    -- save index
+    oldIndex <- use index
     -- eval current operation
     op <- current
-    let opCode = getOpCode op
-    let operation = getOperation opCode
-    let nArgs = numArgs opCode
+    let (operation, nArgs) = getInfo op
     let modes = getModes op nArgs
     args <- getN nArgs
     operation modes args
     -- move pointer
-    index += (nArgs + 1)
+    newIndex <- use index
+    when (oldIndex == newIndex) $ index += (nArgs + 1)
 
 interpret :: State Computer ()
 interpret = use running >>= flip when (evaluate >> interpret)
