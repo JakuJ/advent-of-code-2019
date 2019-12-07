@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ba540f11411645dc374ccb0aef201f4446a8d6bd27a28544dc7ed4f341726f94
+-- hash: 6d9a85799d173d4c30cedd56a3ee8fd494faaa1ae10bc184a171c39a9ae24313
 
 name:           advent2019
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       Problem4
       Problem5
       Problem6
+      Problem7
       ReadInput
   other-modules:
       Paths_advent2019
