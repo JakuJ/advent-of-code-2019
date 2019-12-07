@@ -96,7 +96,7 @@ input _ [arg] = do
     setAt arg val
 
 pushOutput :: Int -> State Computer ()
-pushOutput val = outputs %= (val:)
+pushOutput = (outputs <>=) . pure
 
 output :: Operation
 output [mode] [arg] = pushOutput =<< getValue mode arg

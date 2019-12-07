@@ -3,13 +3,10 @@ module Problem2 (problem2) where
 import IntCode                  (Computer, getAt, makeComputer, makeMemory,
                                  runComputer, setAt)
 import Problem                  (problem)
-import ReadInput                (readCSV)
+import ReadInput                (readProgram)
 
 import Control.Lens             ((^.), _3)
 import Control.Monad.State.Lazy (evalState, execState)
-
-readProgram :: IO [Int]
-readProgram = map read . head <$> readCSV "input2.txt"
 
 -- PART 1
 
@@ -18,7 +15,7 @@ initialize v1 v2 = execState (setAt 1 v1 >> setAt 2 v2)
 
 initComputer :: IO Computer
 initComputer = do
-    memory <- makeMemory <$> readProgram
+    memory <- makeMemory <$> readProgram "input2.txt"
     return $ makeComputer memory []
 
 getFirst :: Computer -> Int

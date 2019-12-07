@@ -1,6 +1,6 @@
 module Problem (problem) where
 
-problem :: Int -> IO Int -> IO Int -> IO ()
+problem :: (Show a, Show b) => Int -> IO a -> IO b -> IO ()
 problem number part1 part2 = do
     putStrLn $ "Problem " ++ show number ++ ":"
     putStr "\tPart 1: "

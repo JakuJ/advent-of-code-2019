@@ -3,7 +3,8 @@
 module ReadInput (
     readLines,
     readInts,
-    readCSV
+    readCSV,
+    readProgram
 ) where
 
 import Data.Text.Lazy (Text, pack, splitOn, unpack)
@@ -26,3 +27,6 @@ readCSV path = map splitCSV <$> readLines path
     where
         splitCSV :: String -> [String]
         splitCSV = map unpack . splitOn "," . pack
+
+readProgram :: FilePath -> IO [Int]
+readProgram path = map read . head <$> readCSV path
