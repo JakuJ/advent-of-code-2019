@@ -1,38 +1,80 @@
 module Problem7 (problem7) where
 
-import IntCode
-import Problem   (problem)
-import ReadInput (readProgram)
+import IntCode                  (Computer, execComputer, inputs, outputs,
+                                 programToComputer, supplyInputs)
+import Problem                  (problem)
+import ReadInput                (readProgram)
 
-import Data.List (delete, maximum)
+import Control.Lens
+import Control.Monad.State.Lazy
+import Data.List                (delete, maximum)
+import Data.Maybe               (catMaybes, listToMaybe)
 
 type Program = [Int]
+type Inputs = [Int]
+type Phases = [Int]
+type Outputs = [Int]
 
-runAmplifier :: Program -> [Int] -> Int -> [Int]
-runAmplifier program inputs phase = _outputs $ runProgram program $ phase : inputs
+execAmplifier :: Program -> Inputs -> Int -> Outputs
+execAmplifier program ins phase = (^. outputs) . execComputer . supplyInputs (phase : ins) $ computer
+    where
+        computer = programToComputer program
 
-amplifierChain :: Program -> [Int] -> Int -> Int
-amplifierChain program phases input = head $ foldl (runAmplifier program) [input] phases
+execAmplifierChain :: Program -> Phases -> Int -> Outputs
+execAmplifierChain program phases input = foldl (execAmplifier program) [input] phases
 
-permutations :: [Int] -> [[Int]]
+permutations :: Phases -> [Phases]
 permutations [] = [[]]
 permutations xs = do
     first <- xs
     rest <- permutations $ delete first xs
     return $ first : rest
 
-tryAll :: Program -> [Int] -> Int -> [Int]
+tryAll :: Program -> Phases -> Int -> Outputs
 tryAll program phases input = do
     phases <- permutations phases
-    return $ amplifierChain program phases input
+    return . head $ execAmplifierChain program phases input
 
 part1 :: IO Int
 part1 = do
     program <- readProgram "input7.txt"
     return . maximum $ tryAll program [0 .. 4] 0
 
+-- PART 2
 
+initLoop :: Program -> Phases -> [Computer]
+initLoop program = map (\ph -> supplyInputs [ph] initial)
+    where
+        initial = programToComputer program
+
+processInputs :: Inputs -> Computer -> Computer
+processInputs ins = execComputer . supplyInputs ins
+
+loopPass :: [Computer] -> Inputs -> (Outputs, [Computer])
+loopPass comps firstInputs = foldl walk (firstInputs, []) comps
+    where
+        walk (ins, comps) comp = (newComp ^. outputs, comps ++ [clearComp])
+            where
+                clearComp = newComp & outputs .~ []
+                newComp = processInputs ins comp
+
+feedbackLoop :: Inputs -> State [Computer] Outputs
+feedbackLoop ins = do
+    comps <- get
+    let (outs, newComps) = loopPass comps ins
+    if null outs then return ins else put newComps >> feedbackLoop outs
+
+tryAll2 :: Program -> Phases -> Inputs -> [Outputs]
+tryAll2 program allPhases ins = do
+    phases <- permutations allPhases
+    let comps = initLoop program phases
+    return $ evalState (feedbackLoop ins) comps
+
+part2 :: IO Int
+part2 = do
+    program <- readProgram "input7.txt"
+    return . maximum . map head $ tryAll2 program [5 .. 9] [0]
 
 problem7 :: IO ()
-problem7 = problem 7 part1 (return 0)
+problem7 = problem 7 part1 part2
 

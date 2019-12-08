@@ -3,18 +3,24 @@
 
 module IntCode (
     Computer (..),
-    runComputer,
-    runMemory,
-    runProgram,
-    makeComputer,
-    makeMemory,
+    execComputer,
+    execMemory,
+    execProgram,
+    programToMemory,
+    memoryToComputer,
+    programToComputer,
     setAt,
-    getAt
+    getAt,
+    supplyInputs,
+    inputs,
+    outputs
 ) where
 
 import Control.Lens             hiding (index)
+import Control.Monad            (mapM_)
 import Control.Monad.State.Lazy
 import Data.Array               hiding (index)
+import Data.Maybe               (listToMaybe)
 
 -- DATA TYPES
 
@@ -24,9 +30,16 @@ data Mode = Positional | Immediate
 type Memory = Array Int Int
 
 data Computer = Computer {_memory :: Array Int Int, _index :: Int, _inputs :: [Int], _outputs :: [Int], _running :: Bool}
-    deriving (Show)
-
 makeLenses ''Computer
+
+instance Show Computer where
+    show c = "Computer: " ++ show val ++ " at " ++ show ix ++ ", stdin: " ++ show ins ++ ", stdout: " ++ show outs
+        where
+            val = evalState current c
+            ix = c ^. index
+            ins = c ^. inputs
+            outs = c ^. outputs
+
 
 type Operation = [Mode] -> [Int] -> State Computer ()
 
@@ -79,16 +92,19 @@ add, mult :: Operation
 add = binaryOp (+)
 mult = binaryOp (*)
 
-popInput :: State Computer Int
+popInput :: State Computer (Maybe Int)
 popInput = do
-    val <- head <$> use inputs
-    inputs %= tail
-    return val
+    val <- listToMaybe <$> use inputs
+    case val of
+        Nothing -> do
+            running .= False
+            return Nothing
+        Just k -> do
+            inputs %= tail
+            return $ Just k
 
 input :: Operation
-input _ [arg] = do
-    val <- popInput
-    setAt arg val
+input _ [arg] = mapM_ (setAt arg) =<< popInput
 
 pushOutput :: Int -> State Computer ()
 pushOutput = (outputs <>=) . pure
@@ -130,11 +146,14 @@ getInfo op = case op `mod` 100 of
 
 -- EVALUATION
 
-makeMemory :: [Int] -> Memory
-makeMemory list = listArray (0, length list - 1) list
+programToMemory :: [Int] -> Memory
+programToMemory list = listArray (0, length list - 1) list
 
-makeComputer :: Memory -> [Int] -> Computer
-makeComputer mem inputs = Computer mem 0 inputs [] True
+memoryToComputer :: Memory -> Computer
+memoryToComputer mem = Computer mem 0 [] [] True
+
+programToComputer :: [Int] -> Computer
+programToComputer prog = memoryToComputer $ programToMemory prog
 
 evaluate :: State Computer ()
 evaluate = do
@@ -147,20 +166,25 @@ evaluate = do
     args <- getN nArgs
     operation modes args
     -- move pointer
-    newIndex <- use index
-    when (oldIndex == newIndex) $ index += (nArgs + 1)
+    stillRunning <- use running
+    when stillRunning $ do
+        newIndex <- use index
+        when (oldIndex == newIndex) $ index += (nArgs + 1)
 
 interpret :: State Computer ()
 interpret = use running >>= flip when (evaluate >> interpret)
 
-runComputer :: Computer -> Computer
-runComputer = execState interpret
+-- DIRECT INTERACTION
 
-runMemory :: Memory -> [Int] -> Computer
-runMemory memory inputs = execState interpret computer
-    where
-        computer = makeComputer memory inputs
+supplyInputs :: [Int] -> Computer -> Computer
+supplyInputs ins = execState (inputs <>= ins)
 
-runProgram :: [Int] -> [Int] -> Computer
-runProgram program = runMemory $ makeMemory program
+execComputer :: Computer -> Computer
+execComputer = execState (running .= True >> interpret)
+
+execMemory :: Memory -> Computer
+execMemory memory = execState interpret $ memoryToComputer memory
+
+execProgram :: [Int] -> Computer
+execProgram program = execComputer $ programToComputer program
 

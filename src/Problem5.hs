@@ -1,13 +1,13 @@
 module Problem5 (problem5) where
 
-import IntCode
+import IntCode   (Computer (..), execComputer, programToComputer, supplyInputs)
 import Problem   (problem)
 import ReadInput (readProgram)
 
 runTEST :: Int -> IO [Int]
 runTEST x = do
     program <- readProgram "input5.txt"
-    return . _outputs $ runProgram program [x]
+    return . _outputs . execComputer . supplyInputs [x] . programToComputer $ program
 
 part1, part2 :: IO [Int]
 part1 = runTEST 1

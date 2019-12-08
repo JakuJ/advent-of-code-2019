@@ -1,7 +1,7 @@
 module Problem2 (problem2) where
 
-import IntCode                  (Computer, getAt, makeComputer, makeMemory,
-                                 runComputer, setAt)
+import IntCode                  (Computer, execComputer, getAt,
+                                 programToComputer, setAt)
 import Problem                  (problem)
 import ReadInput                (readProgram)
 
@@ -14,15 +14,13 @@ initialize :: Int -> Int -> Computer -> Computer
 initialize v1 v2 = execState (setAt 1 v1 >> setAt 2 v2)
 
 initComputer :: IO Computer
-initComputer = do
-    memory <- makeMemory <$> readProgram "input2.txt"
-    return $ makeComputer memory []
+initComputer = programToComputer <$> readProgram "input2.txt"
 
 getFirst :: Computer -> Int
 getFirst = evalState (getAt 0)
 
 process :: Int -> Int -> Computer -> Int
-process v1 v2 = getFirst . runComputer . initialize v1 v2
+process v1 v2 = getFirst . execComputer . initialize v1 v2
 
 part1 :: IO Int
 part1 = process 12 2 <$> initComputer
