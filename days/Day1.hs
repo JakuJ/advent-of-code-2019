@@ -1,10 +1,10 @@
 module Day1 (day1) where
 
-import Puzzle   (puzzle)
-import ReadInput (readInts)
+import Puzzle    (puzzle)
+import ReadInput (inputPath, readInts)
 
 inputs :: IO [Int]
-inputs = readInts "input1.txt"
+inputs = readInts $(inputPath)
 
 -- PART 1
 

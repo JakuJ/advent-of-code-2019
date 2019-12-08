@@ -1,7 +1,7 @@
 module Day3 (day3) where
 
 import           Puzzle                   (puzzle)
-import           ReadInput                (readCSV)
+import           ReadInput                (inputPath, readCSV)
 
 import           Control.Monad.State.Lazy (State, evalState, get, modify)
 import           Data.Bifunctor           (bimap)
@@ -44,7 +44,7 @@ pathToWire = splitPairs . scanl vecAdd (0, 0)
 
 inputs :: IO (Path, Path)
 inputs = do
-    [first, second] <- readCSV "input3.txt"
+    [first, second] <- readCSV $(inputPath)
     return $ both (map parseVector) (first, second)
 
 -- PART 1

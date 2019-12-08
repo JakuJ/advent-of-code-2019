@@ -1,27 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module ReadInput (
-    readChars,
     readLines,
     readInts,
     readCSV,
-    readProgram
+    readProgram,
+    inputPath -- Re-export from DaysTH
 ) where
 
 import Data.Text.Lazy (Text, pack, splitOn, unpack)
-
--- Helper functions
-
-toInputPath :: FilePath -> FilePath
-toInputPath = ("inputs/" ++ )
+import DaysTH         (inputPath)
 
 -- Exported reader functions
 
-readChars :: FilePath -> IO String
-readChars = readFile . toInputPath
-
 readLines :: FilePath -> IO [String]
-readLines path = lines <$> readFile (toInputPath path)
+readLines path = lines <$> readFile path
 
 readInts :: FilePath -> IO [Int]
 readInts path = map read <$> readLines path

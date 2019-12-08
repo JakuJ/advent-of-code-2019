@@ -1,14 +1,15 @@
 module Day5 (day5) where
 
-import Data.List (last)
 import IntCode   (Computer (_outputs), execComputer, programToComputer,
                   supplyInputs)
 import Puzzle    (puzzle)
-import ReadInput (readProgram)
+import ReadInput (inputPath, readProgram)
+
+import Data.List (last)
 
 runTEST :: Int -> IO Int
 runTEST x = do
-    program <- readProgram "input5.txt"
+    program <- readProgram $(inputPath)
     return . last . _outputs . execComputer . supplyInputs [x] . programToComputer $ program
 
 part1, part2 :: IO Int

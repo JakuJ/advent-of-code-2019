@@ -1,17 +1,18 @@
 module Day8 (day8) where
 
+import Puzzle        (puzzle)
+import ReadInput     (inputPath)
+
 import Data.Char     (digitToInt)
 import Data.Foldable (minimumBy)
 import Data.List     (intercalate, splitAt, transpose)
 import Data.Ord      (comparing)
-import Puzzle        (puzzle)
-import ReadInput     (readChars)
 
 type Layer = [Int]
 type Image = [Layer]
 
 getInput :: IO [Int]
-getInput = map digitToInt <$> readChars "input8.txt"
+getInput = map digitToInt <$> readFile $(inputPath)
 
 layerSize :: Int
 layerSize = 25 * 6

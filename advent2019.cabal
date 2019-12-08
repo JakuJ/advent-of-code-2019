@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c558433a26b3f0575f800a22b122d73e4ebdd713a20155664a1762124c9e0186
+-- hash: 38b7f95dbc8f1d1bc459c90d3c394bd403747a527181f471f9b56ee2508edb9b
 
 name:           advent2019
 version:        0.1.0.0
@@ -35,6 +35,7 @@ library
       Day7
       Day8
       Puzzle
+      DaysTH
       IntCode
       ReadInput
   other-modules:
@@ -42,6 +43,7 @@ library
   hs-source-dirs:
       days
       lib
+  default-extensions: TemplateHaskell
   build-depends:
       array
     , base >=4.7 && <5
@@ -57,10 +59,10 @@ library
 executable advent2019
   main-is: Main.hs
   other-modules:
-      Days
       Paths_advent2019
   hs-source-dirs:
       app
+  default-extensions: TemplateHaskell
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       advent2019

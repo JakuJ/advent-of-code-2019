@@ -34,6 +34,9 @@ library:
     - days
     - lib
 
+default-extensions:
+- TemplateHaskell
+
 executables:
   advent2019:
     main:                Main.hs

@@ -1,11 +1,11 @@
 module Day6 (day6) where
 
-import           Data.Maybe (fromJust, mapMaybe)
-import           Data.Tuple (swap)
 import           Puzzle     (puzzle)
-import           ReadInput  (readLines)
+import           ReadInput  (inputPath, readLines)
 
 import qualified Data.Map   as Map
+import           Data.Maybe (fromJust, mapMaybe)
+import           Data.Tuple (swap)
 
 type Edge = (String, String)
 type OrbitMap = Map.Map String [String]
@@ -27,7 +27,7 @@ collect current passed m
 
 part1 :: IO Int
 part1 = do
-    orbits <- readLines "input6.txt"
+    orbits <- readLines $(inputPath)
     let m = orbitMap $ map parse orbits
     return $ collect "COM" 0 m - 1
 
@@ -51,7 +51,7 @@ treePath current previous total m
 
 part2 :: IO Int
 part2 = do
-    orbits <- readLines "input6.txt"
+    orbits <- readLines $(inputPath)
     let m = twoWayMap $ map parse orbits
     return . fromJust $ treePath "YOU" "" 0 m
 

@@ -3,7 +3,7 @@ module Day2 (day2) where
 import IntCode                  (Computer, execComputer, getAt,
                                  programToComputer, setAt)
 import Puzzle                   (puzzle)
-import ReadInput                (readProgram)
+import ReadInput                (inputPath, readProgram)
 
 import Control.Lens             ((^.), _3)
 import Control.Monad.State.Lazy (evalState, execState)
@@ -14,7 +14,7 @@ initialize :: Int -> Int -> Computer -> Computer
 initialize v1 v2 = execState (setAt 1 v1 >> setAt 2 v2)
 
 initComputer :: IO Computer
-initComputer = programToComputer <$> readProgram "input2.txt"
+initComputer = programToComputer <$> readProgram $(inputPath)
 
 getFirst :: Computer -> Int
 getFirst = evalState (getAt 0)

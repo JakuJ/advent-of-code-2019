@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Main where
 
 import Day1
@@ -11,7 +9,7 @@ import Day6
 import Day7
 import Day8
 
-import Days (runDays)
+import DaysTH (runDays)
 
 main :: IO ()
 main = $(runDays 8)

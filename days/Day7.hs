@@ -3,7 +3,7 @@ module Day7 (day7) where
 import IntCode                  (Computer, execComputer, inputs, outputs,
                                  programToComputer, supplyInputs)
 import Puzzle                   (puzzle)
-import ReadInput                (readProgram)
+import ReadInput                (inputPath, readProgram)
 
 import Control.Lens
 import Control.Monad.State.Lazy
@@ -30,7 +30,7 @@ tryAll program phases input = do
 
 part1 :: IO Int
 part1 = do
-    program <- readProgram "input7.txt"
+    program <- readProgram $(inputPath)
     return . maximum $ tryAll program [0 .. 4] 0
 
 -- PART 2
@@ -65,7 +65,7 @@ tryAll2 program allPhases ins = do
 
 part2 :: IO Int
 part2 = do
-    program <- readProgram "input7.txt"
+    program <- readProgram $(inputPath)
     return . maximum . map head $ tryAll2 program [5 .. 9] [0]
 
 day7 :: IO ()
