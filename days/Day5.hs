@@ -1,9 +1,9 @@
-module Problem5 (problem5) where
+module Day5 (day5) where
 
 import Data.List (last)
 import IntCode   (Computer (_outputs), execComputer, programToComputer,
                   supplyInputs)
-import Problem   (problem)
+import Puzzle    (puzzle)
 import ReadInput (readProgram)
 
 runTEST :: Int -> IO Int
@@ -15,5 +15,5 @@ part1, part2 :: IO Int
 part1 = runTEST 1
 part2 = runTEST 5
 
-problem5 :: IO ()
-problem5 = problem 5 part1 part2
+day5 :: IO ()
+day5 = puzzle 5 part1 part2

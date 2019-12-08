@@ -1,6 +1,6 @@
-module Problem1 (problem1) where
+module Day1 (day1) where
 
-import Problem   (problem)
+import Puzzle   (puzzle)
 import ReadInput (readInts)
 
 inputs :: IO [Int]
@@ -28,5 +28,5 @@ part2 = sum . map moduleMass <$> inputs
 
 -- EXPORTED SOLUTION
 
-problem1 :: IO ()
-problem1 = problem 1 part1 part2
+day1 :: IO ()
+day1 = puzzle 1 part1 part2

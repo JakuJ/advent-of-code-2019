@@ -1,8 +1,8 @@
-module Problem7 (problem7) where
+module Day7 (day7) where
 
 import IntCode                  (Computer, execComputer, inputs, outputs,
                                  programToComputer, supplyInputs)
-import Problem                  (problem)
+import Puzzle                   (puzzle)
 import ReadInput                (readProgram)
 
 import Control.Lens
@@ -75,6 +75,6 @@ part2 = do
     program <- readProgram "input7.txt"
     return . maximum . map head $ tryAll2 program [5 .. 9] [0]
 
-problem7 :: IO ()
-problem7 = problem 7 part1 part2
+day7 :: IO ()
+day7 = puzzle 7 part1 part2
 

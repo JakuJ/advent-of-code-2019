@@ -30,7 +30,7 @@ dependencies:
 
 library:
   source-dirs:
-    - src
+    - days
     - lib
 
 executables:

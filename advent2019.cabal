@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6aa03d3c2756a266c13bd37c44b274022c069c803d773a8aa799f09b7809539d
+-- hash: e9183b97655542fbdcfcdd4230ae2f892277c6475043de41733f84022064487f
 
 name:           advent2019
 version:        0.1.0.0
@@ -26,20 +26,20 @@ source-repository head
 
 library
   exposed-modules:
-      Problem
-      Problem1
-      Problem2
-      Problem3
-      Problem4
-      Problem5
-      Problem6
-      Problem7
+      Day1
+      Day2
+      Day3
+      Day4
+      Day5
+      Day6
+      Day7
+      Puzzle
       IntCode
       ReadInput
   other-modules:
       Paths_advent2019
   hs-source-dirs:
-      src
+      days
       lib
   build-depends:
       array

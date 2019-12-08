@@ -1,12 +1,12 @@
 module Main where
 
-import Problem1
-import Problem2
-import Problem3
-import Problem4
-import Problem5
-import Problem6
-import Problem7
+import Day1
+import Day2
+import Day3
+import Day4
+import Day5
+import Day6
+import Day7
 
 main :: IO ()
-main = sequence_ [problem1, problem2, problem3, problem4, problem5, problem6, problem7]
+main = sequence_ [day1, day2, day3, day4, day5, day6, day7]

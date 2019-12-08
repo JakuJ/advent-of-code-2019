@@ -1,6 +1,6 @@
-module Problem4 (problem4) where
+module Day4 (day4) where
 
-import Problem       (problem)
+import Puzzle        (puzzle)
 
 import Data.Function (on)
 import Data.List     (group)
@@ -33,5 +33,5 @@ onlyTwoAdjacent = any ((== 2) . length) . group
 part2 :: Int
 part2 = length . filter onlyTwoAdjacent $ bruteforce
 
-problem4 :: IO ()
-problem4 = (problem 4 `on` return) part1 part2
+day4 :: IO ()
+day4 = (puzzle 4 `on` return) part1 part2

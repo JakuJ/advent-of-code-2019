@@ -1,7 +1,7 @@
-module Problem (problem) where
+module Puzzle (puzzle) where
 
-problem :: (Show a, Show b) => Int -> IO a -> IO b -> IO ()
-problem number part1 part2 = do
+puzzle :: (Show a, Show b) => Int -> IO a -> IO b -> IO ()
+puzzle number part1 part2 = do
     putStrLn $ "Problem " ++ show number ++ ":"
     putStr "\tPart 1: "
     print =<< part1

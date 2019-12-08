@@ -1,8 +1,8 @@
-module Problem6 (problem6) where
+module Day6 (day6) where
 
 import           Data.Maybe (fromJust, mapMaybe)
 import           Data.Tuple (swap)
-import           Problem    (problem)
+import           Puzzle     (puzzle)
 import           ReadInput  (readLines)
 
 import qualified Data.Map   as Map
@@ -55,7 +55,7 @@ part2 = do
     let m = twoWayMap $ map parse orbits
     return . fromJust $ treePath "YOU" "" 0 m
 
-problem6 :: IO ()
-problem6 = problem 6 part1 part2
+day6 :: IO ()
+day6 = puzzle 6 part1 part2
 
 

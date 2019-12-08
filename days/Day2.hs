@@ -1,8 +1,8 @@
-module Problem2 (problem2) where
+module Day2 (day2) where
 
 import IntCode                  (Computer, execComputer, getAt,
                                  programToComputer, setAt)
-import Problem                  (problem)
+import Puzzle                   (puzzle)
 import ReadInput                (readProgram)
 
 import Control.Lens             ((^.), _3)
@@ -44,5 +44,5 @@ part2 = do
 
 -- EXPORTED SOLUTION
 
-problem2 :: IO ()
-problem2 = problem 2 part1 part2
+day2 :: IO ()
+day2 = puzzle 2 part1 part2

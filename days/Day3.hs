@@ -1,8 +1,6 @@
-module Problem3 (
-    problem3
-) where
+module Day3 (day3) where
 
-import           Problem                  (problem)
+import           Puzzle                   (puzzle)
 import           ReadInput                (readCSV)
 
 import           Control.Monad.State.Lazy (State, evalState, get, modify)
@@ -181,5 +179,5 @@ part2 = minimumSteps <$> inputs
 
 -- EXPORTED SOLUTION
 
-problem3 :: IO ()
-problem3 = problem 3 part1 part2
+day3 :: IO ()
+day3 = puzzle 3 part1 part2
