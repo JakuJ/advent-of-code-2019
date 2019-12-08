@@ -14,16 +14,16 @@ import DaysTH         (inputPath)
 -- Exported reader functions
 
 readLines :: FilePath -> IO [String]
-readLines path = lines <$> readFile path
+readLines = fmap lines . readFile
 
 readInts :: FilePath -> IO [Int]
-readInts path = map read <$> readLines path
+readInts = fmap (map read) . readLines
 
 readCSV :: FilePath -> IO [[String]]
-readCSV path = map splitCSV <$> readLines path
+readCSV = fmap (map splitCSV) . readLines
     where
         splitCSV :: String -> [String]
         splitCSV = map unpack . splitOn "," . pack
 
 readProgram :: FilePath -> IO [Int]
-readProgram path = map read . head <$> readCSV path
+readProgram = fmap (map read . head) . readCSV
