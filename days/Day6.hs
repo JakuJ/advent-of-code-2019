@@ -56,6 +56,6 @@ part2 = do
     return . fromJust $ treePath "YOU" "" 0 m
 
 day6 :: IO ()
-day6 = puzzle 6 part1 part2
+day6 = puzzle part1 part2
 
 

@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module ReadInput (
+    readChars,
     readLines,
     readInts,
     readCSV,
@@ -15,6 +16,9 @@ toInputPath :: FilePath -> FilePath
 toInputPath = ("inputs/" ++ )
 
 -- Exported reader functions
+
+readChars :: FilePath -> IO String
+readChars = readFile . toInputPath
 
 readLines :: FilePath -> IO [String]
 readLines path = lines <$> readFile (toInputPath path)

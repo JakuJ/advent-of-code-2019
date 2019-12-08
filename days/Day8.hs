@@ -1,0 +1,57 @@
+module Day8 (day8) where
+
+import Data.Char     (digitToInt)
+import Data.Foldable (minimumBy)
+import Data.List     (intercalate, splitAt, transpose)
+import Data.Ord      (comparing)
+import Puzzle        (puzzle)
+import ReadInput     (readChars)
+
+type Layer = [Int]
+type Image = [Layer]
+
+getInput :: IO [Int]
+getInput = map digitToInt <$> readChars "input8.txt"
+
+layerSize :: Int
+layerSize = 25 * 6
+
+splitBy :: Int -> [Int] -> Image
+splitBy n [] = []
+splitBy n img = layer : splitBy n rest
+    where
+        (layer, rest) = splitAt n img
+
+count :: (Eq a, Foldable f) => a -> f a -> Int
+count el = foldl (\acc x -> if el == x then acc + 1 else acc) 0
+
+part1 :: IO Int
+part1 = do
+    image <- splitBy layerSize <$> getInput
+    let fewestZeros = minimumBy (comparing (count 0)) image
+    return $ count 1 fewestZeros * count 2 fewestZeros
+
+-- PART 2
+
+visibility :: Image -> Layer
+visibility layers = map getVisible pixels
+    where
+        getVisible :: [Int] -> Int
+        getVisible = head . dropWhile (==2)
+        pixels = transpose layers
+
+part2 :: IO ()
+part2 = do
+    image <- splitBy layerSize <$> getInput
+    let decoded = visibility image
+    let rows = splitBy 25 decoded -- split by rows
+    mapM_ (putStrLn . rowToString) rows
+        where
+            rowToString :: [Int] -> String
+            rowToString = ('\t':) . map (" *" !!)
+
+day8 :: IO ()
+day8 = do
+    puzzle part1 (return "BCPZB")
+    putStrLn ""
+    part2

@@ -34,4 +34,4 @@ part2 :: Int
 part2 = length . filter onlyTwoAdjacent $ bruteforce
 
 day4 :: IO ()
-day4 = (puzzle 4 `on` return) part1 part2
+day4 = (puzzle `on` return) part1 part2

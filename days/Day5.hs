@@ -16,4 +16,4 @@ part1 = runTEST 1
 part2 = runTEST 5
 
 day5 :: IO ()
-day5 = puzzle 5 part1 part2
+day5 = puzzle part1 part2

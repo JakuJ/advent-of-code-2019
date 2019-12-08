@@ -180,4 +180,4 @@ part2 = minimumSteps <$> inputs
 -- EXPORTED SOLUTION
 
 day3 :: IO ()
-day3 = puzzle 3 part1 part2
+day3 = puzzle part1 part2

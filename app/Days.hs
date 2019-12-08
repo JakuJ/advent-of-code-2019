@@ -7,7 +7,11 @@ import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 
 runDay :: Int -> Q Exp
-runDay n = [| $(varE (mkName ("day" ++ show n))) |]
+runDay n = [| putStrLn title >> $(varE (mkName function)) |]
+    where
+        title = "Day " ++ num ++ ":"
+        function = "day" ++ num
+        num = show n
 
 runDays :: Int -> Q Exp
 runDays 0 = [| return () |]

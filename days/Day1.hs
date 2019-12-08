@@ -29,4 +29,4 @@ part2 = sum . map moduleMass <$> inputs
 -- EXPORTED SOLUTION
 
 day1 :: IO ()
-day1 = puzzle 1 part1 part2
+day1 = puzzle part1 part2

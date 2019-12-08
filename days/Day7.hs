@@ -7,7 +7,7 @@ import ReadInput                (readProgram)
 
 import Control.Lens
 import Control.Monad.State.Lazy
-import Data.List                (delete, maximum)
+import Data.List                (delete, maximum, permutations)
 import Data.Maybe               (catMaybes, listToMaybe)
 
 type Program = [Int]
@@ -22,13 +22,6 @@ execAmplifier program ins phase = (^. outputs) . execComputer . supplyInputs (ph
 
 execAmplifierChain :: Program -> Phases -> Int -> Outputs
 execAmplifierChain program phases input = foldl (execAmplifier program) [input] phases
-
-permutations :: Phases -> [Phases]
-permutations [] = [[]]
-permutations xs = do
-    first <- xs
-    rest <- permutations $ delete first xs
-    return $ first : rest
 
 tryAll :: Program -> Phases -> Int -> Outputs
 tryAll program phases input = do
@@ -76,5 +69,5 @@ part2 = do
     return . maximum . map head $ tryAll2 program [5 .. 9] [0]
 
 day7 :: IO ()
-day7 = puzzle 7 part1 part2
+day7 = puzzle part1 part2
 

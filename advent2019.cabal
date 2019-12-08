@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 41f863b5077eb7c66af876224e02016c5d520793a651d6be0217407b942bf3e1
+-- hash: c558433a26b3f0575f800a22b122d73e4ebdd713a20155664a1762124c9e0186
 
 name:           advent2019
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
       Day5
       Day6
       Day7
+      Day8
       Puzzle
       IntCode
       ReadInput

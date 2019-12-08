@@ -45,4 +45,4 @@ part2 = do
 -- EXPORTED SOLUTION
 
 day2 :: IO ()
-day2 = puzzle 2 part1 part2
+day2 = puzzle part1 part2
