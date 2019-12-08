@@ -29,7 +29,13 @@ data Mode = Positional | Immediate
 
 type Memory = Array Int Int
 
-data Computer = Computer {_memory :: Array Int Int, _index :: Int, _inputs :: [Int], _outputs :: [Int], _running :: Bool}
+data Computer = Computer
+                { _memory  :: Array Int Int
+                , _index   :: Int
+                , _inputs  :: [Int]
+                , _outputs :: [Int]
+                , _running :: Bool
+                }
 makeLenses ''Computer
 
 instance Show Computer where
@@ -169,7 +175,7 @@ evaluate = do
     stillRunning <- use running
     when stillRunning $ do
         newIndex <- use index
-        when (oldIndex == newIndex) $ index += (nArgs + 1)
+        when (oldIndex == newIndex) $ index += nArgs + 1
 
 interpret :: State Computer ()
 interpret = use running >>= flip when (evaluate >> interpret)
