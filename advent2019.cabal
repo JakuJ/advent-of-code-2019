@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6d9a85799d173d4c30cedd56a3ee8fd494faaa1ae10bc184a171c39a9ae24313
+-- hash: 6aa03d3c2756a266c13bd37c44b274022c069c803d773a8aa799f09b7809539d
 
 name:           advent2019
 version:        0.1.0.0
@@ -26,7 +26,6 @@ source-repository head
 
 library
   exposed-modules:
-      IntCode
       Problem
       Problem1
       Problem2
@@ -35,11 +34,13 @@ library
       Problem5
       Problem6
       Problem7
+      IntCode
       ReadInput
   other-modules:
       Paths_advent2019
   hs-source-dirs:
       src
+      lib
   build-depends:
       array
     , base >=4.7 && <5

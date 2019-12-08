@@ -29,7 +29,9 @@ dependencies:
 - parsec
 
 library:
-  source-dirs: src
+  source-dirs:
+    - src
+    - lib
 
 executables:
   advent2019:
