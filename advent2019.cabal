@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e9183b97655542fbdcfcdd4230ae2f892277c6475043de41733f84022064487f
+-- hash: 41f863b5077eb7c66af876224e02016c5d520793a651d6be0217407b942bf3e1
 
 name:           advent2019
 version:        0.1.0.0
@@ -48,6 +48,7 @@ library
     , lens
     , mtl
     , parsec
+    , template-haskell
     , text
     , tuple
   default-language: Haskell2010
@@ -55,6 +56,7 @@ library
 executable advent2019
   main-is: Main.hs
   other-modules:
+      Days
       Paths_advent2019
   hs-source-dirs:
       app
@@ -67,6 +69,7 @@ executable advent2019
     , lens
     , mtl
     , parsec
+    , template-haskell
     , text
     , tuple
   default-language: Haskell2010

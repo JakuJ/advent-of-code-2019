@@ -27,6 +27,7 @@ dependencies:
 - containers
 - lens
 - parsec
+- template-haskell
 
 library:
   source-dirs:
