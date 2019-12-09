@@ -16,25 +16,27 @@ module IntCode (
     outputs
 ) where
 
-import Control.Lens             hiding (index)
-import Control.Monad            (mapM_)
-import Control.Monad.State.Lazy
-import Data.Array               hiding (index)
-import Data.Maybe               (listToMaybe)
+import           Control.Lens             hiding (index)
+import           Control.Monad            (mapM_)
+import           Control.Monad.State.Lazy
+import           Data.Maybe               (fromMaybe, listToMaybe)
+import           Data.Sequence            (Seq, fromList, update)
+import qualified Data.Sequence            as Seq (lookup, replicate)
 
 -- DATA TYPES
 
-data Mode = Positional | Immediate
+data Mode = Positional | Immediate | Relative
     deriving (Show)
 
-type Memory = Array Int Int
+type Memory = Seq Int
 
 data Computer = Computer
-                { _memory  :: Array Int Int
-                , _index   :: Int
-                , _inputs  :: [Int]
-                , _outputs :: [Int]
-                , _running :: Bool
+                { _memory        :: Memory
+                , _index         :: Int
+                , _inputs        :: [Int]
+                , _outputs       :: [Int]
+                , _running       :: Bool
+                , _relative_base :: Int
                 }
 makeLenses ''Computer
 
@@ -61,11 +63,27 @@ getModes op n = map (toMode . flip getDigit str) [2 .. 1 + n]
         toMode = \case
             '0' -> Positional
             '1' -> Immediate
+            '2' -> Relative
+
+-- MEMORY MANAGEMENT
+
+-- O(1)
+endOffset :: Int -> State Computer Int
+endOffset ix = (+1) . (ix -) . length <$> use memory
+
+-- O(log(min(i, n - 1)))
+getAt :: Int -> State Computer Int
+getAt ix = fromMaybe 0 . Seq.lookup ix <$> use memory
+
+-- O(log(min(i, n - 1))), where i = index
+setAt :: Int -> Int -> State Computer ()
+setAt ix val = do
+    offset <- endOffset ix -- O(1)
+    if offset > 0
+        then memory <>= Seq.replicate (offset - 1) 0 |> val -- O(log m) + O(log(min(n, m))) where m = i - n
+        else memory %= update ix val -- O(log(min(i, n - 1)))
 
 -- STATE HELPERS
-
-getAt :: Int -> State Computer Int
-getAt ix = (! ix) <$> use memory
 
 getN :: Int -> State Computer [Int]
 getN n = do
@@ -75,13 +93,13 @@ getN n = do
 current :: State Computer Int
 current = getAt =<< use index
 
-setAt :: Int -> Int -> State Computer ()
-setAt ix val = memory %= (// [(ix, val)])
-
 getValue :: Mode -> Int -> State Computer Int
 getValue = \case
     Positional -> getAt
     Immediate -> return
+    Relative -> \n -> do
+        b <- use relative_base
+        getAt (n + b)
 
 -- OPERATIONS
 
@@ -137,6 +155,9 @@ compareLess, compareEqual :: Operation
 compareLess = comparison (<)
 compareEqual = comparison (==)
 
+adjustRelativeBase :: Operation
+adjustRelativeBase [mode] [arg] = (relative_base +=) =<< getValue mode arg
+
 getInfo :: Int -> (Operation, Int)
 getInfo op = case op `mod` 100 of
     99 -> (halt, 0)
@@ -148,15 +169,16 @@ getInfo op = case op `mod` 100 of
     6  -> (jumpIfFalse, 2)
     7  -> (compareLess, 3)
     8  -> (compareEqual, 3)
+    9  -> (adjustRelativeBase, 1)
     x  -> error $ "Invalid opcode: " ++ show x
 
 -- EVALUATION
 
 programToMemory :: [Int] -> Memory
-programToMemory list = listArray (0, length list - 1) list
+programToMemory = fromList
 
 memoryToComputer :: Memory -> Computer
-memoryToComputer mem = Computer mem 0 [] [] True
+memoryToComputer mem = Computer mem 0 [] [] True 0
 
 programToComputer :: [Int] -> Computer
 programToComputer prog = memoryToComputer $ programToMemory prog
