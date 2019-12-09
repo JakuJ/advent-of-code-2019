@@ -28,13 +28,13 @@ import qualified Data.Sequence            as Seq (lookup, replicate)
 data Mode = Positional | Immediate | Relative
     deriving (Show)
 
-type Memory = Seq Int
+type Memory = Seq Integer
 
 data Computer = Computer
                 { _memory        :: Memory
                 , _index         :: Int
-                , _inputs        :: [Int]
-                , _outputs       :: [Int]
+                , _inputs        :: [Integer]
+                , _outputs       :: [Integer]
                 , _running       :: Bool
                 , _relative_base :: Int
                 }
@@ -49,7 +49,7 @@ instance Show Computer where
             outs = c ^. outputs
 
 
-type Operation = [Mode] -> [Int] -> State Computer ()
+type Operation = [Mode] -> [Integer] -> State Computer ()
 
 -- OPCODE HELPERS
 
@@ -72,11 +72,11 @@ endOffset :: Int -> State Computer Int
 endOffset ix = (+1) . (ix -) . length <$> use memory
 
 -- O(log(min(i, n - 1)))
-getAt :: Int -> State Computer Int
+getAt :: Int -> State Computer Integer
 getAt ix = fromMaybe 0 . Seq.lookup ix <$> use memory
 
 -- O(log(min(i, n - 1))), where i = index
-setAt :: Int -> Int -> State Computer ()
+setAt :: Int -> Integer -> State Computer ()
 setAt ix val = do
     offset <- endOffset ix -- O(1)
     if offset > 0
@@ -85,38 +85,38 @@ setAt ix val = do
 
 -- STATE HELPERS
 
-getN :: Int -> State Computer [Int]
+getN :: Int -> State Computer [Integer]
 getN n = do
     c <- use index
     sequence [getAt (c + offset) | offset <- [1 .. n]]
 
 current :: State Computer Int
-current = getAt =<< use index
+current = fromInteger <$> (getAt =<< use index)
 
-getValue :: Mode -> Int -> State Computer Int
+getValue :: Mode -> Integer -> State Computer Integer
 getValue = \case
-    Positional -> getAt
+    Positional -> getAt . fromInteger
     Immediate -> return
     Relative -> \n -> do
         b <- use relative_base
-        getAt (n + b)
+        getAt (fromInteger n + b)
 
 -- OPERATIONS
 
 halt :: Operation
 halt _ _ = running .= False
 
-binaryOp :: (Int -> Int -> Int) -> Operation
+binaryOp :: (Integer -> Integer -> Integer) -> Operation
 binaryOp op [m1, m2, _] [a1, a2, addr] = do
     v1 <- getValue m1 a1
     v2 <- getValue m2 a2
-    setAt addr $ v1 `op` v2
+    setAt (fromInteger addr) $ v1 `op` v2
 
 add, mult :: Operation
 add = binaryOp (+)
 mult = binaryOp (*)
 
-popInput :: State Computer (Maybe Int)
+popInput :: State Computer (Maybe Integer)
 popInput = do
     val <- listToMaybe <$> use inputs
     case val of
@@ -128,35 +128,35 @@ popInput = do
             return $ Just k
 
 input :: Operation
-input _ [arg] = mapM_ (setAt arg) =<< popInput
+input _ [arg] = mapM_ (setAt (fromInteger arg)) =<< popInput
 
-pushOutput :: Int -> State Computer ()
+pushOutput :: Integer -> State Computer ()
 pushOutput = (outputs <>=) . pure
 
 output :: Operation
 output [mode] [arg] = pushOutput =<< getValue mode arg
 
-jumpIf :: (Int -> Bool) -> Operation
+jumpIf :: (Integer -> Bool) -> Operation
 jumpIf pred [m1, m2] [a1, a2] = do
     check <- pred <$> getValue m1 a1
-    when check $ index <~ getValue m2 a2
+    when check $ index <~ fromInteger <$> getValue m2 (fromInteger a2)
 
 jumpIfTrue, jumpIfFalse :: Operation
 jumpIfTrue = jumpIf (/= 0)
 jumpIfFalse = jumpIf (== 0)
 
-comparison :: (Int -> Int -> Bool) -> Operation
+comparison :: (Integer -> Integer -> Bool) -> Operation
 comparison op [m1, m2, _] [a1, a2, addr] = do
     v1 <- getValue m1 a1
     v2 <- getValue m2 a2
-    setAt addr $ if v1 `op` v2 then 1 else 0
+    setAt (fromInteger addr) $ if v1 `op` v2 then 1 else 0
 
 compareLess, compareEqual :: Operation
 compareLess = comparison (<)
 compareEqual = comparison (==)
 
 adjustRelativeBase :: Operation
-adjustRelativeBase [mode] [arg] = (relative_base +=) =<< getValue mode arg
+adjustRelativeBase [mode] [arg] = (relative_base +=) =<< fromInteger <$> getValue mode (fromInteger arg)
 
 getInfo :: Int -> (Operation, Int)
 getInfo op = case op `mod` 100 of
@@ -174,13 +174,13 @@ getInfo op = case op `mod` 100 of
 
 -- EVALUATION
 
-programToMemory :: [Int] -> Memory
+programToMemory :: [Integer] -> Memory
 programToMemory = fromList
 
 memoryToComputer :: Memory -> Computer
 memoryToComputer mem = Computer mem 0 [] [] True 0
 
-programToComputer :: [Int] -> Computer
+programToComputer :: [Integer] -> Computer
 programToComputer prog = memoryToComputer $ programToMemory prog
 
 evaluate :: State Computer ()
@@ -204,7 +204,7 @@ interpret = use running >>= flip when (evaluate >> interpret)
 
 -- DIRECT INTERACTION
 
-supplyInputs :: [Int] -> Computer -> Computer
+supplyInputs :: [Integer] -> Computer -> Computer
 supplyInputs ins = execState (inputs <>= ins)
 
 execComputer :: Computer -> Computer
@@ -213,6 +213,6 @@ execComputer = execState (running .= True >> interpret)
 execMemory :: Memory -> Computer
 execMemory memory = execState interpret $ memoryToComputer memory
 
-execProgram :: [Int] -> Computer
+execProgram :: [Integer] -> Computer
 execProgram program = execComputer $ programToComputer program
 

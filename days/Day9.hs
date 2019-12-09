@@ -3,7 +3,7 @@ module Day9 (day9) where
 import IntCode
 import ReadInput (readProgram, inputPath)
 
-getSource :: IO [Int]
+getSource :: IO [Integer]
 getSource = readProgram $(inputPath)
     
 day9 :: IO ()

@@ -10,25 +10,25 @@ import Control.Monad.State.Lazy
 import Data.List                (delete, maximum, permutations)
 import Data.Maybe               (catMaybes, listToMaybe)
 
-type Program = [Int]
-type Inputs = [Int]
-type Phases = [Int]
-type Outputs = [Int]
+type Program = [Integer]
+type Inputs = [Integer]
+type Phases = [Integer]
+type Outputs = [Integer]
 
-execAmplifier :: Program -> Inputs -> Int -> Outputs
+execAmplifier :: Program -> Inputs -> Integer -> Outputs
 execAmplifier program ins phase = (^. outputs) . execComputer . supplyInputs (phase : ins) $ computer
     where
         computer = programToComputer program
 
-execAmplifierChain :: Program -> Phases -> Int -> Outputs
+execAmplifierChain :: Program -> Phases -> Integer -> Outputs
 execAmplifierChain program phases input = foldl (execAmplifier program) [input] phases
 
-tryAll :: Program -> Phases -> Int -> Outputs
+tryAll :: Program -> Phases -> Integer -> Outputs
 tryAll program phases input = do
     phases <- permutations phases
     return . head $ execAmplifierChain program phases input
 
-part1 :: IO Int
+part1 :: IO Integer
 part1 = do
     program <- readProgram $(inputPath)
     return . maximum $ tryAll program [0 .. 4] 0
@@ -63,7 +63,7 @@ tryAll2 program allPhases ins = do
     let comps = initLoop program phases
     return $ evalState (feedbackLoop ins) comps
 
-part2 :: IO Int
+part2 :: IO Integer
 part2 = do
     program <- readProgram $(inputPath)
     return . maximum . map head $ tryAll2 program [5 .. 9] [0]

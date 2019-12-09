@@ -25,5 +25,5 @@ readCSV = fmap (map splitCSV) . readLines
         splitCSV :: String -> [String]
         splitCSV = map unpack . splitOn "," . pack
 
-readProgram :: FilePath -> IO [Int]
+readProgram :: FilePath -> IO [Integer]
 readProgram = fmap (map read . head) . readCSV
