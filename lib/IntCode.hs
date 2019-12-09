@@ -80,10 +80,10 @@ endOffset ix = (+1) . (ix -) . Seq.length <$> use memory
 getAt :: Int -> State Computer Integer
 getAt ix = fromMaybe 0 . Seq.lookup ix <$> use memory
 
--- O(log(min(i, n - 1))), where i = index
+-- O(log(min(i, n - 1))) where i = index
 setAt :: Int -> Integer -> State Computer ()
 setAt ix val = do
-    offset <- endOffset ix -- O(1)
+    offset <- endOffset ix
     if offset > 0
         then memory <>= Seq.replicate (offset - 1) 0 |> val -- O(log m) + O(log(min(n, m))) where m = i - n
         else memory %= update ix val -- O(log(min(i, n - 1)))
