@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 81cedf2d80a5a1e47011b8767617ce74243e399a7028a81156ddd8e7309aea93
+-- hash: 186841f53f169ad0aa9b89327bda7561081531f700e07d75e8f22e25b89f28f7
 
 name:           advent2019
 version:        0.1.0.0
@@ -83,6 +83,7 @@ test-suite unit
   main-is: Spec.hs
   other-modules:
       DaysSpec
+      IntCodeSpec
       Paths_advent2019
   hs-source-dirs:
       test

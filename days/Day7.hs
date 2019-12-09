@@ -1,7 +1,7 @@
-module Day7 (day7, part1, part2) where
+module Day7 (day7, part1, part2, findMaxThrust, findMaxThrust2) where
 
-import IntCode                  (Computer, execComputer, inputs, outputs,
-                                 programToComputer, supplyInputs)
+import IntCode                  (Computer, Program, execComputer, inputs,
+                                 outputs, programToComputer, supplyInputs)
 import Puzzle                   (puzzle)
 import ReadInput                (inputPath, readProgram)
 
@@ -10,7 +10,6 @@ import Control.Monad.State.Lazy
 import Data.List                (delete, maximum, permutations)
 import Data.Maybe               (catMaybes, listToMaybe)
 
-type Program = [Integer]
 type Inputs = [Integer]
 type Phases = [Integer]
 type Outputs = [Integer]
@@ -23,15 +22,15 @@ execAmplifier program ins phase = (^. outputs) . execComputer . supplyInputs (ph
 execAmplifierChain :: Program -> Phases -> Integer -> Outputs
 execAmplifierChain program phases input = foldl (execAmplifier program) [input] phases
 
-tryAll :: Program -> Phases -> Integer -> Outputs
-tryAll program phases input = do
+findMaxThrust :: Program -> Phases -> Integer -> Integer
+findMaxThrust program phases input = maximum $ do
     phases <- permutations phases
     return . head $ execAmplifierChain program phases input
 
 part1 :: IO Integer
 part1 = do
     program <- readProgram $(inputPath)
-    return . maximum $ tryAll program [0 .. 4] 0
+    return $ findMaxThrust program [0 .. 4] 0
 
 -- PART 2
 
@@ -57,8 +56,8 @@ feedbackLoop ins = do
     let (outs, newComps) = loopPass comps ins
     if null outs then return ins else put newComps >> feedbackLoop outs
 
-tryAll2 :: Program -> Phases -> Inputs -> [Outputs]
-tryAll2 program allPhases ins = do
+findMaxThrust2 :: Program -> Phases -> Inputs -> Integer
+findMaxThrust2 program allPhases ins = maximum . map head $ do
     phases <- permutations allPhases
     let comps = initLoop program phases
     return $ evalState (feedbackLoop ins) comps
@@ -66,7 +65,7 @@ tryAll2 program allPhases ins = do
 part2 :: IO Integer
 part2 = do
     program <- readProgram $(inputPath)
-    return . maximum . map head $ tryAll2 program [5 .. 9] [0]
+    return $ findMaxThrust2 program [5 .. 9] [0]
 
 day7 :: IO ()
 day7 = puzzle part1 part2

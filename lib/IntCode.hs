@@ -3,6 +3,7 @@
 
 module IntCode (
     Computer (..),
+    Program,
     execComputer,
     execMemory,
     execProgram,
@@ -13,7 +14,8 @@ module IntCode (
     getAt,
     supplyInputs,
     inputs,
-    outputs
+    outputs,
+    memory
 ) where
 
 import           Control.Lens             hiding (index)
@@ -28,6 +30,7 @@ import qualified Data.Sequence            as Seq (lookup, replicate)
 data Mode = Positional | Immediate | Relative
     deriving (Show)
 
+type Program = [Integer]
 type Memory = Seq Integer
 
 data Computer = Computer
@@ -213,6 +216,6 @@ execComputer = execState (running .= True >> interpret)
 execMemory :: Memory -> Computer
 execMemory memory = execState interpret $ memoryToComputer memory
 
-execProgram :: [Integer] -> Computer
+execProgram :: Program -> Computer
 execProgram program = execComputer $ programToComputer program
 

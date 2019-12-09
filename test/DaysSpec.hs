@@ -1,4 +1,4 @@
-module DaysSpec where
+module DaysSpec (spec) where
 
 import qualified Day1
 import qualified Day2
