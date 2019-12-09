@@ -26,4 +26,4 @@ Template Haskell doesn't support import statement generation, so a wall of impor
 
 **Lens**
 
-The *lens* package is used in the **IntCode** interpreter too get, set and modify the state of the virtual machine. The interpreter uses the `State` monad to simplify stateful operations.
+The *lens* package is used in the **IntCode** interpreter to get, set and modify the state of the virtual machine. The interpreter uses the `State` monad to simplify stateful operations.

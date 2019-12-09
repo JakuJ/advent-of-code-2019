@@ -9,7 +9,7 @@ import Day6
 import Day7
 import Day8
 
-import DaysTH (runDays)
+import DaysTH (runAllDays)
 
 main :: IO ()
-main = $(runDays 8)
+main = $(runAllDays)

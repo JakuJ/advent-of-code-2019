@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 22c172bbaa768a20f609b4b06f3b34eb0d7a33405d3e2bd0d302b06f5a98be84
+-- hash: 432d481ca469ca5bd11f855b5e0415a9b67d99a408767dda1ad4aceb1fffd642
 
 name:           advent2019
 version:        0.1.0.0
@@ -48,9 +48,9 @@ library
       array
     , base >=4.7 && <5
     , containers
+    , directory
     , lens
     , mtl
-    , parsec
     , template-haskell
     , text
     , tuple
@@ -69,9 +69,9 @@ executable advent2019
     , array
     , base >=4.7 && <5
     , containers
+    , directory
     , lens
     , mtl
-    , parsec
     , template-haskell
     , text
     , tuple

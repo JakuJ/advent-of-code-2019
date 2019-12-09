@@ -26,8 +26,8 @@ dependencies:
 - array
 - containers
 - lens
-- parsec
 - template-haskell
+- directory
 
 library:
   source-dirs:
