@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module DaysTH (runAllDays, inputPath) where
+module DaysTH (runAllDays, inputPath, dayParts) where
 
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
@@ -27,6 +27,14 @@ runDays :: Int -> Q Exp
 runDays 0 = [| putStrLn "Solutions for Advent of Code 2019!" |]
 runDays n = [| $(runDays (n - 1)) >> $(runDay n) |]
 
--- Run all Da modules
+-- Run all Day modules
 runAllDays :: Q Exp
 runAllDays = runDays =<< runIO (length <$> listDirectory "days")
+
+-- Get both parts of a given day
+dayParts :: Int -> Q Exp
+dayParts n = [| (n, $(varE (mkName part1)), $(varE (mkName part2))) |]
+    where
+        moduleName = "Day" ++ show n
+        part1 = moduleName ++ ".part1"
+        part2 = moduleName ++ ".part2"

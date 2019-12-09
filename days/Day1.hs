@@ -1,4 +1,4 @@
-module Day1 (day1) where
+module Day1 (day1, part1, part2) where
 
 import Puzzle    (puzzle)
 import ReadInput (inputPath, readInts)

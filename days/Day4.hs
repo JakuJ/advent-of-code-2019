@@ -1,4 +1,4 @@
-module Day4 (day4) where
+module Day4 (day4, part1, part2) where
 
 import Puzzle        (puzzle)
 
@@ -22,16 +22,16 @@ checkRules = and . ([twoAdjacent, nonDecreasing] <*>) . pure
 bruteforce :: [String]
 bruteforce = [show pass | pass <- [lower .. upper], checkRules (show pass)]
 
-part1 :: Int
-part1 = length bruteforce
+part1 :: IO Int
+part1 = return $ length bruteforce
 
 -- PART 2
 
 onlyTwoAdjacent :: String -> Bool
 onlyTwoAdjacent = any ((== 2) . length) . group
 
-part2 :: Int
-part2 = length . filter onlyTwoAdjacent $ bruteforce
+part2 :: IO Int
+part2 = return . length . filter onlyTwoAdjacent $ bruteforce
 
 day4 :: IO ()
-day4 = (puzzle `on` return) part1 part2
+day4 = puzzle part1 part2

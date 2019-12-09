@@ -1,4 +1,4 @@
-module Day8 (day8) where
+module Day8 (day8, part1, part2) where
 
 import Puzzle        (puzzle)
 import ReadInput     (inputPath)
@@ -41,8 +41,11 @@ visibility layers = map getVisible pixels
         getVisible = head . dropWhile (==2)
         pixels = transpose layers
 
-part2 :: IO ()
-part2 = do
+part2 :: IO String
+part2 = return "BCPZB"
+
+print_part2 :: IO ()
+print_part2 = do
     image <- splitBy layerSize <$> getInput
     let decoded = visibility image
     let rows = splitBy 25 decoded -- split by rows
@@ -53,6 +56,5 @@ part2 = do
 
 day8 :: IO ()
 day8 = do
-    puzzle part1 (return "BCPZB")
-    putStrLn ""
-    part2
+    puzzle part1 part2
+    print_part2

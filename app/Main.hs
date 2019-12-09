@@ -8,6 +8,7 @@ import Day5
 import Day6
 import Day7
 import Day8
+import Day9
 
 import DaysTH (runAllDays)
 

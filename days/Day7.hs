@@ -1,4 +1,4 @@
-module Day7 (day7) where
+module Day7 (day7, part1, part2) where
 
 import IntCode                  (Computer, execComputer, inputs, outputs,
                                  programToComputer, supplyInputs)
