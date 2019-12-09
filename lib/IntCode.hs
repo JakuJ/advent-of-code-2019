@@ -7,6 +7,7 @@ module IntCode (
     execComputer,
     execMemory,
     execProgram,
+    execWithInputs,
     programToMemory,
     memoryToComputer,
     programToComputer,
@@ -23,7 +24,7 @@ import           Control.Monad            (mapM_)
 import           Control.Monad.State.Lazy
 import           Data.Maybe               (fromMaybe, listToMaybe)
 import           Data.Sequence            (Seq, fromList, update)
-import qualified Data.Sequence            as Seq (lookup, replicate)
+import qualified Data.Sequence            as Seq (length, lookup, replicate)
 
 -- DATA TYPES
 
@@ -44,8 +45,9 @@ data Computer = Computer
 makeLenses ''Computer
 
 instance Show Computer where
-    show c = "Computer: " ++ show val ++ " at " ++ show ix ++ ", stdin: " ++ show ins ++ ", stdout: " ++ show outs
+    show c = "Computer: " ++ show val ++ " at " ++ show ix ++ " out of " ++ show len ++ ", stdin: " ++ show ins ++ ", stdout: " ++ show outs
         where
+            len = Seq.length $ c ^. memory
             val = evalState current c
             ix = c ^. index
             ins = c ^. inputs
@@ -72,7 +74,7 @@ getModes op n = map (toMode . flip getDigit str) [2 .. 1 + n]
 
 -- O(1)
 endOffset :: Int -> State Computer Int
-endOffset ix = (+1) . (ix -) . length <$> use memory
+endOffset ix = (+1) . (ix -) . Seq.length <$> use memory
 
 -- O(log(min(i, n - 1)))
 getAt :: Int -> State Computer Integer
@@ -104,16 +106,30 @@ getValue = \case
         b <- use relative_base
         getAt (fromInteger n + b)
 
+getAddr :: Mode -> Integer -> State Computer Int
+getAddr = \case
+    Positional -> return . fromInteger
+    Relative -> \n -> do
+        b <- use relative_base
+        return $ b + fromInteger n
+
+-- Binary op helper
+getThree :: [Mode] -> [Integer] -> State Computer (Integer, Integer, Int)
+getThree [m1, m2, m3] [a1, a2, a3] = do
+    v1 <- getValue m1 a1
+    v2 <- getValue m2 a2
+    addr <- getAddr m3 a3
+    return (v1, v2, addr)
+
 -- OPERATIONS
 
 halt :: Operation
 halt _ _ = running .= False
 
 binaryOp :: (Integer -> Integer -> Integer) -> Operation
-binaryOp op [m1, m2, _] [a1, a2, addr] = do
-    v1 <- getValue m1 a1
-    v2 <- getValue m2 a2
-    setAt (fromInteger addr) $ v1 `op` v2
+binaryOp op modes args = do
+    (v1, v2, addr) <- getThree modes args
+    setAt addr $ v1 `op` v2
 
 add, mult :: Operation
 add = binaryOp (+)
@@ -131,7 +147,9 @@ popInput = do
             return $ Just k
 
 input :: Operation
-input _ [arg] = mapM_ (setAt (fromInteger arg)) =<< popInput
+input [mode] [arg] = do
+    addr <- getAddr mode arg
+    mapM_ (setAt addr) =<< popInput
 
 pushOutput :: Integer -> State Computer ()
 pushOutput = (outputs <>=) . pure
@@ -142,24 +160,23 @@ output [mode] [arg] = pushOutput =<< getValue mode arg
 jumpIf :: (Integer -> Bool) -> Operation
 jumpIf pred [m1, m2] [a1, a2] = do
     check <- pred <$> getValue m1 a1
-    when check $ index <~ fromInteger <$> getValue m2 (fromInteger a2)
+    when check $ index <~ fromInteger <$> getValue m2 a2
 
 jumpIfTrue, jumpIfFalse :: Operation
 jumpIfTrue = jumpIf (/= 0)
 jumpIfFalse = jumpIf (== 0)
 
 comparison :: (Integer -> Integer -> Bool) -> Operation
-comparison op [m1, m2, _] [a1, a2, addr] = do
-    v1 <- getValue m1 a1
-    v2 <- getValue m2 a2
-    setAt (fromInteger addr) $ if v1 `op` v2 then 1 else 0
+comparison op modes args = do
+    (v1, v2, addr) <- getThree modes args
+    setAt addr $ if v1 `op` v2 then 1 else 0
 
 compareLess, compareEqual :: Operation
 compareLess = comparison (<)
 compareEqual = comparison (==)
 
 adjustRelativeBase :: Operation
-adjustRelativeBase [mode] [arg] = (relative_base +=) =<< fromInteger <$> getValue mode (fromInteger arg)
+adjustRelativeBase [mode] [arg] = (relative_base +=) =<< fromInteger <$> getValue mode arg
 
 getInfo :: Int -> (Operation, Int)
 getInfo op = case op `mod` 100 of
@@ -219,3 +236,5 @@ execMemory memory = execState interpret $ memoryToComputer memory
 execProgram :: Program -> Computer
 execProgram program = execComputer $ programToComputer program
 
+execWithInputs :: [Integer] -> Program -> Computer
+execWithInputs ins program = execComputer . supplyInputs ins $ programToComputer program

@@ -28,3 +28,4 @@ spec = do
     testDay $(dayParts 6) (247089, 442)
     testDay $(dayParts 7) (77500, 22476942)
     testDay $(dayParts 8) (2413, "BCPZB")
+    testDay $(dayParts 9) (4234906522, 60962)

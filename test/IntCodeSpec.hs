@@ -10,11 +10,8 @@ import Test.Hspec
 transforms :: (Program, Program) -> Expectation
 transforms (program, state) = toList (execProgram program ^. memory) `shouldBe` state
 
-execWithInputs :: Program -> [Integer] -> Computer
-execWithInputs program ins = execComputer . supplyInputs ins $ programToComputer program
-
 produces :: (Program, [Integer], [Integer]) -> Expectation
-produces (program, ins, outs) = (execWithInputs program ins ^. outputs) `shouldBe` outs
+produces (program, ins, outs) = (execWithInputs ins program ^. outputs) `shouldBe` outs
 
 spec :: Spec
 spec = describe "IntCode Interpreter" $ do
