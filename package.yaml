@@ -22,8 +22,6 @@ dependencies:
 - base >= 4.7 && < 5
 - text
 - mtl
-- tuple
-- array
 - containers
 - lens
 - template-haskell
