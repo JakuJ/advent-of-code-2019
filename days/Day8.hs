@@ -17,9 +17,9 @@ getInput = map digitToInt <$> readFile $(inputPath)
 layerSize :: Int
 layerSize = 25 * 6
 
-splitBy :: Int -> [Int] -> Image
-splitBy n [] = []
-splitBy n img = layer : splitBy n rest
+chunksOf :: Int -> [a] -> [[a]]
+chunksOf n [] = []
+chunksOf n img = layer : chunksOf n rest
     where
         (layer, rest) = splitAt n img
 
@@ -28,7 +28,7 @@ count el = foldl (\acc x -> if el == x then acc + 1 else acc) 0
 
 part1 :: IO Int
 part1 = do
-    image <- splitBy layerSize <$> getInput
+    image <- chunksOf layerSize <$> getInput
     let fewestZeros = minimumBy (comparing (count 0)) image
     return $ count 1 fewestZeros * count 2 fewestZeros
 
@@ -46,9 +46,9 @@ part2 = return "BCPZB"
 
 print_part2 :: IO ()
 print_part2 = do
-    image <- splitBy layerSize <$> getInput
+    image <- chunksOf layerSize <$> getInput
     let decoded = visibility image
-    let rows = splitBy 25 decoded -- split by rows
+    let rows = chunksOf 25 decoded -- split by rows
     mapM_ (putStrLn . rowToString) rows
         where
             rowToString :: [Int] -> String
