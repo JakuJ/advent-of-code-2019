@@ -1,15 +1,14 @@
-module Day1 (day1, part1, part2) where
+module Day1 (part1, part2) where
 
-import Puzzle    (puzzle)
 import ReadInput (inputPath, readInts)
 
 inputs :: IO [Int]
 inputs = readInts $(inputPath)
 
--- PART 1
-
 fuelMass :: Int -> Int
 fuelMass x = (x `div` 3) - 2
+
+-- PART 1
 
 part1 :: IO Int
 part1 = sum . map fuelMass <$> inputs
@@ -25,8 +24,3 @@ moduleMass x
 
 part2 :: IO Int
 part2 = sum . map moduleMass <$> inputs
-
--- EXPORTED SOLUTION
-
-day1 :: IO ()
-day1 = puzzle part1 part2

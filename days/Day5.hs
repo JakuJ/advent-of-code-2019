@@ -1,8 +1,7 @@
-module Day5 (day5, part1, part2) where
+module Day5 (part1, part2) where
 
 import IntCode   (Computer (_outputs), execComputer, programToComputer,
                   supplyInputs)
-import Puzzle    (puzzle)
 import ReadInput (inputPath, readProgram)
 
 import Data.List (last)
@@ -15,6 +14,3 @@ runTEST x = do
 part1, part2 :: IO Integer
 part1 = runTEST 1
 part2 = runTEST 5
-
-day5 :: IO ()
-day5 = puzzle part1 part2

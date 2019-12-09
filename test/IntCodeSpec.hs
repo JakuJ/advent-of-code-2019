@@ -1,11 +1,11 @@
 module IntCodeSpec (spec) where
 
-import Control.Lens  ((^.))
-import Data.Foldable (toList)
 import Day7          (findMaxThrust, findMaxThrust2)
 import IntCode
-import Test.Hspec
 
+import Control.Lens  ((^.))
+import Data.Foldable (toList)
+import Test.Hspec    (Expectation, Spec, describe, it, parallel, shouldBe)
 
 transforms :: (Program, Program) -> Expectation
 transforms (program, state) = toList (execProgram program ^. memory) `shouldBe` state
@@ -14,12 +14,13 @@ produces :: (Program, [Integer], [Integer]) -> Expectation
 produces (program, ins, outs) = (execWithInputs ins program ^. outputs) `shouldBe` outs
 
 spec :: Spec
-spec = describe "IntCode Interpreter" $ do
-    it "Ends up in a proper state" $ mapM_ transforms day2testCases
-    it "Produces correct outputs (day 2)" $ mapM_ produces day5testCases
-    it "Finds maximum amplified thrust" $ mapM_ (\(p, out) -> findMaxThrust p [0 .. 4] 0 `shouldBe` out) day7testCases1
-    it "Finds maximum feedback loop thrust" $ mapM_ (\(p, out) -> findMaxThrust2 p [5 .. 9] [0] `shouldBe` out) day7testCases2
-    it "Produces correct outputs (day 9)" $ mapM_ (\(p, out) -> produces (p, [], out)) day9testCases
+spec = parallel $ do
+    describe "Day 2" $ it "Ends up in a proper states" $ mapM_ transforms day2testCases
+    describe "Day 5" $ it "Produces correct outputs" $ mapM_ produces day5testCases
+    describe "Day 7" $ do
+        it "Finds maximum amplified thrusts" $ mapM_ (\(p, out) -> findMaxThrust p [0 .. 4] 0 `shouldBe` out) day7testCases1
+        it "Finds maximum feedback loop thrusts" $ mapM_ (\(p, out) -> findMaxThrust2 p [5 .. 9] [0] `shouldBe` out) day7testCases2
+    describe "Day 9" $ it "Produces correct outputs" $ mapM_ (\(p, out) -> produces (p, [], out)) day9testCases
 
 day2testCases :: [(Program, Program)]
 day2testCases = [

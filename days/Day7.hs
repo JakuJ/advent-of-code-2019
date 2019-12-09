@@ -1,8 +1,7 @@
-module Day7 (day7, part1, part2, findMaxThrust, findMaxThrust2) where
+module Day7 (part1, part2, findMaxThrust, findMaxThrust2) where
 
 import IntCode                  (Computer, Program, execComputer, inputs,
                                  outputs, programToComputer, supplyInputs)
-import Puzzle                   (puzzle)
 import ReadInput                (inputPath, readProgram)
 
 import Control.Lens
@@ -13,6 +12,8 @@ import Data.Maybe               (catMaybes, listToMaybe)
 type Inputs = [Integer]
 type Phases = [Integer]
 type Outputs = [Integer]
+
+-- PART 1
 
 execAmplifier :: Program -> Inputs -> Integer -> Outputs
 execAmplifier program ins phase = (^. outputs) . execComputer . supplyInputs (phase : ins) $ computer
@@ -66,7 +67,3 @@ part2 :: IO Integer
 part2 = do
     program <- readProgram $(inputPath)
     return $ findMaxThrust2 program [5 .. 9] [0]
-
-day7 :: IO ()
-day7 = puzzle part1 part2
-

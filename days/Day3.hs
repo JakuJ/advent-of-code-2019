@@ -1,6 +1,5 @@
-module Day3 (day3, part1, part2) where
+module Day3 (part1, part2) where
 
-import           Puzzle                   (puzzle)
 import           ReadInput                (inputPath, readCSV)
 
 import           Control.Monad.State.Lazy (State, evalState, get, modify)
@@ -176,8 +175,3 @@ minimumSteps paths = minimum . Map.elems $ distMap
 
 part2 :: IO Int
 part2 = minimumSteps <$> inputs
-
--- EXPORTED SOLUTION
-
-day3 :: IO ()
-day3 = puzzle part1 part2

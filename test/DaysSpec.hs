@@ -1,17 +1,18 @@
 module DaysSpec (spec) where
 
-import qualified Day1
-import qualified Day2
-import qualified Day3
-import qualified Day4
-import qualified Day5
-import qualified Day6
-import qualified Day7
-import qualified Day8
-import qualified Day9
+import qualified Day1       (part1, part2)
+import qualified Day2       (part1, part2)
+import qualified Day3       (part1, part2)
+import qualified Day4       (part1, part2)
+import qualified Day5       (part1, part2)
+import qualified Day6       (part1, part2)
+import qualified Day7       (part1, part2)
+import qualified Day8       (part1, part2)
+import qualified Day9       (part1, part2)
+
 import           DaysTH     (dayParts)
 
-import           Test.Hspec
+import           Test.Hspec (Spec, describe, it, parallel, shouldBe)
 
 testDay :: (Show a, Eq a, Show b, Eq b) => (Int, IO a, IO b) -> (a, b) -> Spec
 testDay (day, in1, in2) (exp1, exp2) = describe ("Day " ++ show day) $ do
@@ -19,7 +20,7 @@ testDay (day, in1, in2) (exp1, exp2) = describe ("Day " ++ show day) $ do
     it "Solves part 2" $ in2 >>= (`shouldBe` exp2)
 
 spec :: Spec
-spec = do
+spec = parallel $ do
     testDay $(dayParts 1) (3389778, 5081802)
     testDay $(dayParts 2) (11590668, 2254)
     testDay $(dayParts 3) (2193, 63526)

@@ -1,6 +1,5 @@
-module Day8 (day8, part1, part2) where
+module Day8 (part1, part2) where
 
-import Puzzle        (puzzle)
 import ReadInput     (inputPath)
 
 import Data.Char     (digitToInt)
@@ -23,6 +22,8 @@ chunksOf n img = layer : chunksOf n rest
     where
         (layer, rest) = splitAt n img
 
+-- PART 1
+
 count :: (Eq a, Foldable f) => a -> f a -> Int
 count el = foldl (\acc x -> if el == x then acc + 1 else acc) 0
 
@@ -41,9 +42,7 @@ visibility layers = map getVisible pixels
         getVisible = head . dropWhile (==2)
         pixels = transpose layers
 
-part2 :: IO String
-part2 = return "BCPZB"
-
+-- Prints the answer ("BCPZB" in ASCII art) to console
 print_part2 :: IO ()
 print_part2 = do
     image <- chunksOf layerSize <$> getInput
@@ -54,7 +53,5 @@ print_part2 = do
             rowToString :: [Int] -> String
             rowToString = ('\t':) . map (" *" !!)
 
-day8 :: IO ()
-day8 = do
-    puzzle part1 part2
-    print_part2
+part2 :: IO String
+part2 = return "BCPZB"
