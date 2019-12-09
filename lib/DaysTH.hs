@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module DaysTH (runAllDays, inputPath, dayParts) where
+module DaysTH (runAllDays, inputPath, dayParts') where
 
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
@@ -19,17 +19,21 @@ inputPath = [| "inputs/input" ++ last $(moduleName) : ".txt" |]
 
 -- RUNNING ALL PUZZLES
 
--- Get an index and both parts of a given day
+-- Get both parts of a given puzzle
 dayParts :: Int -> Q Exp
-dayParts n = [| (n, $(varE (mkName part1)), $(varE (mkName part2))) |]
+dayParts n = [| ($(varE (mkName part1)), $(varE (mkName part2))) |]
     where
-        moduleName = "Day" ++ show n
         part1 = moduleName ++ ".part1"
         part2 = moduleName ++ ".part2"
+        moduleName = "Day" ++ show n
+
+-- Get an index and both parts of a given puzzle, used in unit tests
+dayParts' :: Int -> Q Exp
+dayParts' n = [| let (p1, p2) = $(dayParts n) in (n, p1, p2) |]
 
 -- Run the module for a given day
 runDay :: Int -> Q Exp
-runDay n = [| let (_, part1, part2) = $(dayParts n) in do
+runDay n = [| let (part1, part2) = $(dayParts n) in do
     putStrLn $ "Day " ++ show n
     putStr "\tPart 1: "
     print =<< part1

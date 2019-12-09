@@ -1,16 +1,16 @@
 module Main where
 
-import qualified Day1   (part1, part2)
-import qualified Day2   (part1, part2)
-import qualified Day3   (part1, part2)
-import qualified Day4   (part1, part2)
-import qualified Day5   (part1, part2)
-import qualified Day6   (part1, part2)
-import qualified Day7   (part1, part2)
-import qualified Day8   (part1, part2)
-import qualified Day9   (part1, part2)
+import Day1
+import Day2
+import Day3
+import Day4
+import Day5
+import Day6
+import Day7
+import Day8
+import Day9
 
-import           DaysTH (runAllDays)
+import DaysTH (runAllDays)
 
 main :: IO ()
 main = $(runAllDays)
