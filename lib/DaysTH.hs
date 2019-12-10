@@ -2,6 +2,7 @@
 
 module DaysTH (runAllDays, inputPath, dayParts') where
 
+import Data.Char                  (isAlpha)
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax (lift)
@@ -15,7 +16,7 @@ moduleName = lift =<< loc_module <$> location
 
 -- Get input path based on current module
 inputPath :: Q Exp
-inputPath = [| "inputs/input" ++ last $(moduleName) : ".txt" |]
+inputPath = [| "inputs/input" ++ dropWhile isAlpha $(moduleName) ++ ".txt" |]
 
 -- RUNNING ALL PUZZLES
 

@@ -16,7 +16,7 @@ Problems from Advent of Code 2019 solved in Haskell.
 
 The **IntCode** interpreter is covered by unit tests that check example programs from the puzzles' contents.
 I also include unit tests for each solved puzzle, that assert whether a given module still outputs the correct value.
-And yes, that means there exists a answer list in `DaysSpec.hs`. You're welcome.
+And yes, that means there exists a list of answers in `DaysSpec.hs`, but everyone gets different inputs for their puzzles, so that's not a problem.
 
 ## Some more advanced concepts
 
