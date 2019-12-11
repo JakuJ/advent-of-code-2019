@@ -1,24 +1,10 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module DaysTH (runAllDays, inputPath, dayParts') where
+module DaysTH (runAllDays, dayParts') where
 
-import Data.Char                  (isAlpha)
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
-import Language.Haskell.TH.Syntax (lift)
-import System.Directory           (listDirectory)
-
--- INPUT PATH RESOLUTION
-
--- Get current module name
-moduleName :: Q Exp
-moduleName = lift =<< loc_module <$> location
-
--- Get input path based on current module
-inputPath :: Q Exp
-inputPath = [| "inputs/input" ++ dropWhile isAlpha $(moduleName) ++ ".txt" |]
-
--- RUNNING ALL PUZZLES
+import System.Directory          (listDirectory)
 
 -- Get both parts of a given puzzle
 dayParts :: Int -> Q Exp

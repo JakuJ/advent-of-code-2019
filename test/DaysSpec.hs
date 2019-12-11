@@ -1,5 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
-
 module DaysSpec (spec) where
 
 import Day1

@@ -1,17 +1,31 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
 
 module ReadInput (
     readLines,
     readInts,
     readCSV,
     readProgram,
-    inputPath -- Re-export from DaysTH
+    inputPath
 ) where
 
-import Data.Text.Lazy (Text, pack, splitOn, unpack)
-import DaysTH         (inputPath)
+import Data.Char                  (isAlpha)
+import Data.Text.Lazy             (Text, pack, splitOn, unpack)
+import Language.Haskell.TH
+import Language.Haskell.TH.Quote
+import Language.Haskell.TH.Syntax (lift)
 
--- Exported reader functions
+-- Input path resolution
+
+-- Get current module name
+moduleName :: Q Exp
+moduleName = lift =<< loc_module <$> location
+
+-- Get input path based on current module
+inputPath :: Q Exp
+inputPath = [| "inputs/input" ++ dropWhile isAlpha $(moduleName) ++ ".txt" |]
+
+-- Input file parsing
 
 readLines :: FilePath -> IO [String]
 readLines = fmap lines . readFile
