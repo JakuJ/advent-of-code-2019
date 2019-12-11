@@ -45,7 +45,7 @@ data Computer = Computer
 makeLenses ''Computer
 
 instance Show Computer where
-    show c = "Computer: " ++ show val ++ " at " ++ show ix ++ " out of " ++ show len ++ ", stdin: " ++ show ins ++ ", stdout: " ++ show outs
+    show c = "Computer {" ++ show val ++ " at " ++ show ix ++ " out of " ++ show len ++ ", input: " ++ show ins ++ ", output: " ++ show outs ++ "}"
         where
             len = Seq.length $ c ^. memory
             val = evalState current c
