@@ -14,8 +14,10 @@ import           Data.Tuple                 (swap)
 loadComputer :: IO Computer
 loadComputer = programToComputer <$> readProgram $(inputPath)
 
+data Color = Black | White
+    deriving (Show, Enum)
+
 type Vector = (Int, Int)
-type Color = Integer
 data Robot = Robot {_brain :: Computer, _direction :: Vector, _position :: Vector, _hull :: M.Map Vector Color}
     deriving (Show)
 
@@ -46,14 +48,14 @@ currentColor :: State Robot Color
 currentColor = do
     pos <- use position
     h <- use hull
-    return $ M.findWithDefault 0 pos h
+    return $ M.findWithDefault Black pos h
 
 move :: State Robot ()
 move = do
     -- get color underneath
     cur <- currentColor
     -- pass it to the computer
-    brain %= execComputer . supplyInputs [cur]
+    brain %= execComputer . supplyInputs [fromIntegral $ fromEnum cur]
     outs <- use $ brain . outputs
     brain . outputs .= []
     -- check if finished
@@ -61,7 +63,7 @@ move = do
         let [clr, dir] = outs
         -- paint current location
         pos <- use position
-        hull %= M.insert pos clr
+        hull %= M.insert pos (toEnum (fromInteger clr))
         -- update direction
         newDir <- turn dir <$> use direction
         direction .= newDir
@@ -74,7 +76,7 @@ move = do
 
 part1 :: IO Int
 part1 = do
-    robot <- initRobot 0 <$> loadComputer
+    robot <- initRobot Black <$> loadComputer
     let state = execState move robot
     return . M.size $ state ^. hull
 
@@ -93,20 +95,20 @@ findBounds vs = ((leftB, upperB), rightB - leftB, upperB - lowerB)
 -- run this to print the answer
 printHull :: IO ()
 printHull = do
-    robot <- initRobot 1 <$> loadComputer
+    robot <- initRobot White <$> loadComputer
     let h = execState move robot ^. hull
     let ((sx, sy), width, height) = findBounds $ M.keys h
     -- iterative AF
     forM_ [0 .. height] $ \y -> do
         forM_ [0 .. width] $ \x -> do
             let (cx, cy) = (sx + x, sy - y) -- console coordinates
-            putStr . toChar $ M.findWithDefault 0 (cx, cy) h
+            putStr . toChar $ M.findWithDefault Black (cx, cy) h
         putStrLn ""
     where
-        toChar :: Integer -> String
+        toChar :: Color -> String
         toChar = \case
-            0 -> " "
-            1 -> "#"
+            Black -> " "
+            White -> "#"
 
 part2 :: IO String
 part2 = return "APUGURFH"
