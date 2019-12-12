@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0cb54cdde626a1070ea5b364f4555d6037e53ad0957586318528d3f5a3396bc6
+-- hash: cb547e99649ca1c5ceb19dfb41ab56c6a8ba49e14078380aac6627268588bbce
 
 name:           advent2019
 version:        0.1.0.0
@@ -54,9 +54,9 @@ library
     , directory
     , lens
     , mtl
+    , parallel
     , template-haskell
     , text
-    , unordered-containers
   default-language: Haskell2010
 
 executable advent2019
@@ -74,9 +74,9 @@ executable advent2019
     , directory
     , lens
     , mtl
+    , parallel
     , template-haskell
     , text
-    , unordered-containers
   default-language: Haskell2010
 
 test-suite unit
@@ -98,7 +98,7 @@ test-suite unit
     , hspec
     , lens
     , mtl
+    , parallel
     , template-haskell
     , text
-    , unordered-containers
   default-language: Haskell2010

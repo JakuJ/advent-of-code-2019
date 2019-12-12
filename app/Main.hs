@@ -16,4 +16,5 @@ import Day9
 import DaysTH (runAllDays)
 
 main :: IO ()
-main = $(runAllDays)
+-- main = $(runAllDays)
+main = print =<< Day12.part2

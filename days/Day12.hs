@@ -6,16 +6,18 @@
 module Day12 (part1, part2) where
 
 import Control.Lens
-import Data.Char      (isDigit)
-import Data.Function  (on)
-import Data.List      (splitAt)
-import Data.Text.Lazy (Text, pack, splitOn, unpack)
-import ReadInput      (inputPath, readLines)
+import Control.Parallel (par)
+import Data.Char        (isDigit)
+import Data.Function    (on)
+import Data.List        (splitAt)
+import Data.Text.Lazy   (Text, pack, splitOn, unpack)
+import ReadInput        (inputPath, readLines)
 
 type Vector = (Int, Int, Int)
 
+-- Bangs for strictness to prevent a 1700MB memory leak :)
 vec3 :: [Int] -> Vector
-vec3 [a, b, c] = (a, b, c)
+vec3 [!a, !b, !c] = (a, b, c)
 
 vPlus, vMinus :: Vector -> Vector -> Vector
 vPlus a b = vec3 $ zipWith (+) (a ^.. each) (b ^.. each)
@@ -28,8 +30,8 @@ parsePos = vec3 . map (asInt . filterNum . unpack) . splitOn " " . pack
         asInt x = read x :: Int
         filterNum = filter (\x -> isDigit x || x == '-')
 
-data Planet = Planet {_position :: {-# UNPACK #-} !Vector, _velocity :: {-# UNPACK #-} !Vector}
-    deriving (Show, Eq)
+data Planet = Planet {_position :: Vector, _velocity :: Vector}
+    deriving (Show)
 
 makeLenses ''Planet
 
@@ -74,22 +76,26 @@ part1 = do
 type Axis = (Int, Int)
 type System = [Axis]
 
-toSystem :: _lens -> [Planet] -> System
+toSystem :: _Lens -> [Planet] -> System
 toSystem sel pls = zip poss vels
     where
         poss = pls ^.. traverse . position . sel
         vels = pls ^.. traverse . velocity . sel
 
-stepWith' :: _lens -> System -> Int -> [Planet] -> Int
-stepWith' sel init !n pls
-    | toSystem sel pls == init = n
-    | otherwise = stepWith' sel init (n + 1) (timeStep pls)
-
-stepWith :: [Planet] -> _lens -> Int
+stepWith :: [Planet] -> _Lens -> Int
 stepWith pls sel = stepWith' sel (toSystem sel pls) 1 (timeStep pls)
+    where
+        stepWith' :: _Lens -> System -> Int -> [Planet] -> Int
+        stepWith' sel init n pls
+            | toSystem sel pls == init = n
+            | otherwise = stepWith' sel init (n + 1) (timeStep pls)
+
+parallelMap :: (a -> b) -> [a] -> [b]
+parallelMap f (x:xs) = let r = f x in r `par` r : parallelMap f xs
+parallelMap _ []     = []
 
 part2 :: IO Int
 part2 = do
     planets <- getInput
-    let [xs, ys, zs] = map (stepWith planets) [_1, _2, _3]
+    let [xs, ys, zs] = parallelMap (stepWith planets) [_1, _2, _3]
     return $ lcm xs (lcm ys zs)

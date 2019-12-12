@@ -32,4 +32,35 @@ Template Haskell doesn't support import statement generation, so a wall of impor
 
 ### Lens
 
-The *lens* package is used in the **IntCode** interpreter (and sparsely throughout the code) to get, set and modify the state of the virtual machine. This, alongside the use of the `State` monad, allows for a concise and simple to understand implementation.
+Optics are used extensively in the **IntCode** VM to get, set and modify different parts of the state. They are also handy when handling n-dimensional tuples, mostly when solving puzzles that require the use of 3D points or vectors.
+
+### Pure parallelism
+
+The computation required to solve the second part of the 12th day's puzzle is quite extensive, so a simple implementation of a parallel mapping is implemented using the `par` combinator from the `Control.Parallel` package. This speeds up things a bit on multicore machines.
+
+I've ran `Day12.part2` 10 times using normal `map` and `parallelMap`. I estimated the 95% confidence intervals for mean execution time. Results are as follows: 
+
+|Method       |Lower bound|Upper bound|
+|-------------|-----------|-----------|
+|`map`        |14.38167   |15.33233   |
+|`parallelMap`|10.55612   |12.06788   |
+
+Performing a Welch Two Sample t-test for difference in execution time resulted in a `[-4.38557, -2.70443]` CI. The conclusion is that the `parallelMap`'s performance improvement is statistically significant, meaning that the parallel execution is handled correctly.
+
+### Strictness analysis
+
+The second part of the puzzle for day 12 involves a really long iteration. It running for approx. 11 seconds (see above) wouldn't be surprising by itself, but I happened to run a profiler on the program. The results have shown the memory usage to be around ~1700 MB. Changing the definition for the `vec3` function at the beginning of the module from
+
+```haskell
+vec3 :: [Int] -> Vector
+vec3 [a, b, c] = (a, b, c)
+```
+
+to
+
+```haskell
+vec3 :: [Int] -> Vector
+vec3 [!a, !b, !c] = (a, b, c)
+```
+
+using the `BangPatterns` extension for strictness annotations reduced that to ~0 MB and improved the runtime from 11 seconds on average to about 1.7. The parallelism still helps – without it the program runs 2-3x slower (on my machine).
