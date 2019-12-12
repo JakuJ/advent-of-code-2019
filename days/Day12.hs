@@ -5,13 +5,12 @@
 
 module Day12 (part1, part2) where
 
-import           Control.Lens
-import           Data.Char      (isDigit)
-import           Data.Function  (on)
-import qualified Data.HashSet   as HS
-import           Data.List      (splitAt)
-import           Data.Text.Lazy (Text, pack, splitOn, unpack)
-import           ReadInput      (inputPath, readLines)
+import Control.Lens
+import Data.Char      (isDigit)
+import Data.Function  (on)
+import Data.List      (splitAt)
+import Data.Text.Lazy (Text, pack, splitOn, unpack)
+import ReadInput      (inputPath, readLines)
 
 type Vector = (Int, Int, Int)
 
@@ -86,17 +85,18 @@ toSystem sel pls = vec4 $ zip poss vels
         poss = pls ^.. traverse . position . sel
         vels = pls ^.. traverse . velocity . sel
 
-stepWith :: _lens -> HS.HashSet System -> Int -> [Planet] -> Int
-stepWith sel set !n !pls
-    | HS.member sys set = n
-    | otherwise = stepWith sel (HS.insert sys set) (n + 1) (timeStep pls)
-        where
-            sys = toSystem sel pls
+stepWith' :: _lens -> System -> Int -> [Planet] -> Int
+stepWith' sel !init !n !pls
+    | toSystem sel pls == init = n
+    | otherwise = stepWith' sel init (n + 1) (timeStep pls)
+
+stepWith :: _lens -> [Planet] -> Int
+stepWith sel pls = stepWith' sel (toSystem sel pls) 1 (timeStep pls)
 
 part2 :: IO Int
 part2 = do
     planets <- getInput
-    let xs = stepWith _1 HS.empty 0 planets
-    let ys = stepWith _2 HS.empty 0 planets
-    let zs = stepWith _3 HS.empty 0 planets
+    let xs = stepWith _1 planets
+    let ys = stepWith _2 planets
+    let zs = stepWith _3 planets
     return $ lcm xs (lcm ys zs)
