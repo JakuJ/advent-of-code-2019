@@ -1,41 +1,39 @@
-{-# LANGUAGE BangPatterns               #-}
-{-# LANGUAGE DeriveGeneric              #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE BangPatterns          #-}
+{-# LANGUAGE NamedWildCards        #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE PartialTypeSignatures #-}
 
 module Day12 (part1, part2) where
 
 import           Control.Lens
 import           Data.Char      (isDigit)
 import           Data.Function  (on)
-import           Data.Hashable  (Hashable, hashWithSalt)
 import qualified Data.HashSet   as HS
 import           Data.List      (splitAt)
 import           Data.Text.Lazy (Text, pack, splitOn, unpack)
-import           Debug.Trace
-import           GHC.Generics   (Generic)
 import           ReadInput      (inputPath, readLines)
 
 type Vector = (Int, Int, Int)
 
-toVector :: [Int] -> Vector
-toVector [a, b, c] = (a, b, c)
+vec3 :: [Int] -> Vector
+vec3 [a, b, c] = (a, b, c)
 
 vPlus, vMinus :: Vector -> Vector -> Vector
-vPlus a b = toVector $ zipWith (+) (a ^.. each) (b ^.. each)
+vPlus a b = vec3 $ zipWith (+) (a ^.. each) (b ^.. each)
 vMinus a b = vPlus a (b & each %~ negate)
 
 parsePos :: String -> Vector
-parsePos = toVector . map (asInt . filterNum . unpack) . splitOn " " . pack
+parsePos = vec3 . map (asInt . filterNum . unpack) . splitOn " " . pack
     where
-        toVector [a, b, c] = (a, b, c)
+        vec3 [a, b, c] = (a, b, c)
         asInt x = read x :: Int
         filterNum = filter (\x -> isDigit x || x == '-')
 
-data Planet = Planet {_position :: Vector, _velocity :: Vector}
-    deriving (Show, Eq, Generic)
-
-instance Hashable Planet
+data Planet = Planet {
+                    _position :: {-# UNPACK #-} !Vector,
+                    _velocity :: {-# UNPACK #-} !Vector
+                    }
+    deriving (Show, Eq)
 
 makeLenses ''Planet
 
@@ -77,17 +75,28 @@ part1 = do
 
 -- PART 2
 
-newtype System = System { unSystem :: (Planet, Planet, Planet, Planet) }
-    deriving (Eq, Hashable)
+type Axis = (Int, Int)
+type System = (Axis, Axis, Axis, Axis)
 
-toSystem [a, b, c, d] = System (a, b, c, d)
+vec4 [a, b, c, d] = (a, b, c, d)
 
-stepWith :: HS.HashSet System -> Int -> [Planet] -> Int
-stepWith !set !n !pls
+toSystem :: _lens -> [Planet] -> System
+toSystem sel pls = vec4 $ zip poss vels
+    where
+        poss = pls ^.. traverse . position . sel
+        vels = pls ^.. traverse . velocity . sel
+
+stepWith :: _lens -> HS.HashSet System -> Int -> [Planet] -> Int
+stepWith sel set !n !pls
     | HS.member sys set = n
-    | otherwise = stepWith (HS.insert sys set) (n + 1) (timeStep pls)
+    | otherwise = stepWith sel (HS.insert sys set) (n + 1) (timeStep pls)
         where
-            sys = toSystem pls
+            sys = toSystem sel pls
 
 part2 :: IO Int
-part2 = stepWith HS.empty 0 <$> getInput
+part2 = do
+    planets <- getInput
+    let xs = stepWith _1 HS.empty 0 planets
+    let ys = stepWith _2 HS.empty 0 planets
+    let zs = stepWith _3 HS.empty 0 planets
+    return $ lcm xs (lcm ys zs)

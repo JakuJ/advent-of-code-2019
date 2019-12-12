@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 741b927eb50bd74ea84069bb621684be755b8ce5006a937b6f4306ce3275b583
+-- hash: 0cb54cdde626a1070ea5b364f4555d6037e53ad0957586318528d3f5a3396bc6
 
 name:           advent2019
 version:        0.1.0.0
@@ -47,11 +47,11 @@ library
       days
       lib
   default-extensions: TemplateHaskell
+  ghc-options: -O2 -Wno-partial-type-signatures
   build-depends:
       base >=4.7 && <5
     , containers
     , directory
-    , hashable
     , lens
     , mtl
     , template-haskell
@@ -66,13 +66,12 @@ executable advent2019
   hs-source-dirs:
       app
   default-extensions: TemplateHaskell
-  ghc-options: -O2 -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -O2 -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       advent2019
     , base >=4.7 && <5
     , containers
     , directory
-    , hashable
     , lens
     , mtl
     , template-haskell
@@ -90,13 +89,12 @@ test-suite unit
   hs-source-dirs:
       test
   default-extensions: TemplateHaskell
-  ghc-options: -O2 -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -O2 -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       advent2019
     , base >=4.7 && <5
     , containers
     , directory
-    , hashable
     , hspec
     , lens
     , mtl
