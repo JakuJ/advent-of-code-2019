@@ -3,6 +3,7 @@ module Main where
 import Day1
 import Day10
 import Day11
+import Day12
 import Day2
 import Day3
 import Day4

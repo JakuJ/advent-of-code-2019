@@ -3,6 +3,7 @@ module DaysSpec (spec) where
 import Day1
 import Day10
 import Day11
+import Day12
 import Day2
 import Day3
 import Day4
@@ -34,3 +35,4 @@ spec = parallel $ do
     testDay $(dayParts' 9) (4234906522, 60962)
     testDay $(dayParts' 10) (319, 517)
     testDay $(dayParts' 11) (1883, "APUGURFH")
+    testDay $(dayParts' 12) (6735, 0)

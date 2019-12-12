@@ -26,6 +26,8 @@ dependencies:
 - lens
 - template-haskell
 - directory
+- unordered-containers
+- hashable
 
 library:
   source-dirs:
