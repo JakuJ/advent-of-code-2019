@@ -37,8 +37,8 @@ default-extensions:
 - TemplateHaskell
 
 ghc-options:
-  - -O2
-  - -Wno-partial-type-signatures
+- -O2
+- -Wno-partial-type-signatures
 
 executables:
   advent2019:

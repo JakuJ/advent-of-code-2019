@@ -28,10 +28,7 @@ parsePos = vec3 . map (asInt . filterNum . unpack) . splitOn " " . pack
         asInt x = read x :: Int
         filterNum = filter (\x -> isDigit x || x == '-')
 
-data Planet = Planet {
-                    _position :: {-# UNPACK #-} !Vector,
-                    _velocity :: {-# UNPACK #-} !Vector
-                    }
+data Planet = Planet {_position :: {-# UNPACK #-} !Vector, _velocity :: {-# UNPACK #-} !Vector}
     deriving (Show, Eq)
 
 makeLenses ''Planet
@@ -75,28 +72,24 @@ part1 = do
 -- PART 2
 
 type Axis = (Int, Int)
-type System = (Axis, Axis, Axis, Axis)
-
-vec4 [a, b, c, d] = (a, b, c, d)
+type System = [Axis]
 
 toSystem :: _lens -> [Planet] -> System
-toSystem sel pls = vec4 $ zip poss vels
+toSystem sel pls = zip poss vels
     where
         poss = pls ^.. traverse . position . sel
         vels = pls ^.. traverse . velocity . sel
 
 stepWith' :: _lens -> System -> Int -> [Planet] -> Int
-stepWith' sel !init !n !pls
+stepWith' sel init !n pls
     | toSystem sel pls == init = n
     | otherwise = stepWith' sel init (n + 1) (timeStep pls)
 
-stepWith :: _lens -> [Planet] -> Int
-stepWith sel pls = stepWith' sel (toSystem sel pls) 1 (timeStep pls)
+stepWith :: [Planet] -> _lens -> Int
+stepWith pls sel = stepWith' sel (toSystem sel pls) 1 (timeStep pls)
 
 part2 :: IO Int
 part2 = do
     planets <- getInput
-    let xs = stepWith _1 planets
-    let ys = stepWith _2 planets
-    let zs = stepWith _3 planets
+    let [xs, ys, zs] = map (stepWith planets) [_1, _2, _3]
     return $ lcm xs (lcm ys zs)
