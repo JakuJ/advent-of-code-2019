@@ -98,5 +98,5 @@ parallelMap _ []     = []
 part2 :: IO Int
 part2 = do
     planets <- getInput
-    let [xs, ys, zs] = parallelMap (stepWith planets) [_1, _2, _3]
-    return $ lcm xs (lcm ys zs)
+    let dims = parallelMap (stepWith planets) [_1, _2, _3]
+    return $ foldl1 lcm dims
