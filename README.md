@@ -1,12 +1,21 @@
-# advent-of-code-2019
+# Advent of Code 2019
 
-Problems from Advent of Code 2019 solved in Haskell.
+Problems from Advent of Code 2019 solved in Haskell, now with Breakout!
 
 ## Installation
 
 * Have the `stack` build system for Haskell installed
 * Clone this repository
-* Run `stack build` in the main folder to compile, or `stack run` to also run the app
+* Run `stack build` in the main folder.
+
+## Running
+
+After running the app you will be presented with three options:
+* Running all solutions
+* Playing Breakout on an IntCode VM (day 13 puzzle)
+* Watching a bot do it for you, because it's so frustrating to play
+
+You can also run the unit test suite (`stack test`) to verify everything works correctly, especially the IntCode interpreter.
 
 ## Structure
 
@@ -40,12 +49,12 @@ The computation required to solve the second part of the 12th day's puzzle is qu
 
 I've ran `Day12.part2` 10 times using normal `map` and `parallelMap`. I estimated the 95% confidence intervals for mean execution time. Results are as follows: 
 
-|Method       |Lower bound|Upper bound|
-|-------------|-----------|-----------|
-|`map`        |14.38167   |15.33233   |
-|`parallelMap`|10.55612   |12.06788   |
+| Method        | Lower bound | Upper bound |
+| ------------- | ----------- | ----------- |
+| `map`         | 14.38167    | 15.33233    |
+| `parallelMap` | 10.55612    | 12.06788    |
 
-Performing a Welch Two Sample t-test for difference in execution time resulted in a `[-4.38557, -2.70443]` CI. The conclusion is that the `parallelMap`'s performance improvement is statistically significant, meaning that the parallel execution is handled correctly.
+Performing a two sample t-test for difference in execution time resulted in a `[-4.38557, -2.70443]` 95% CI. The conclusion is that the `parallelMap`'s performance improvement is statistically significant, meaning that the parallel execution is handled correctly.
 
 ### Strictness analysis
 
@@ -63,4 +72,4 @@ vec3 :: [Int] -> Vector
 vec3 [!a, !b, !c] = (a, b, c)
 ```
 
-using the `BangPatterns` extension for strictness annotations reduced that to ~0 MB and improved the runtime from 11 seconds on average to about 1.7. The parallelism still helps – without it the program runs 2-3x slower (on my machine).
+using the `BangPatterns` extension for strictness annotations reduced that to ~0 MB and improved the runtime from 11 seconds on average to about 1.7. Conclusion? Be careful about potential memory leaks resulting from laziness. The parallelism still helps – without it the program runs 2-3x slower (on my machine).

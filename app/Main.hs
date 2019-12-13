@@ -22,7 +22,7 @@ menu = withRawStdin $ do
     putStrLn "Advent of Code 2019!"
     putStrLn "Choose your adventure:"
     putStrLn " 1 - Run all puzzles"
-    putStrLn " 2 - Play the arcade cabinet game"
+    putStrLn " 2 - Play Breakout on the arcade cabinet"
     putStrLn " 3 - Watch a bot beat the game"
     putStr " ...?: "
     getChar
