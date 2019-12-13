@@ -4,6 +4,7 @@ import Day1
 import Day10
 import Day11
 import Day12
+import Day13
 import Day2
 import Day3
 import Day4
@@ -36,3 +37,4 @@ spec = parallel $ do
     testDay $(dayParts' 10) (319, 517)
     testDay $(dayParts' 11) (1883, "APUGURFH")
     testDay $(dayParts' 12) (6735, 326489627728984)
+    testDay $(dayParts' 13) (273, 13140)

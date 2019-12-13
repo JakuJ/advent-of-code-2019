@@ -6,14 +6,18 @@ module ReadInput (
     readInts,
     readCSV,
     readProgram,
-    inputPath
+    inputPath,
+    withRawStdin,
+    withRawStdout
 ) where
 
+import Control.Exception          (bracket)
 import Data.Char                  (isAlpha)
 import Data.Text.Lazy             (Text, pack, splitOn, unpack)
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax (lift)
+import System.IO
 
 -- Input path resolution
 
@@ -41,3 +45,27 @@ readCSV = fmap (map splitCSV) . readLines
 
 readProgram :: FilePath -> IO [Integer]
 readProgram = fmap (map read . head) . readCSV
+
+-- User interactivity
+
+withRawStdin :: IO a -> IO a
+withRawStdin = bracket uncook restore . const
+    where
+        uncook = do
+            oldBuffering <- hGetBuffering stdin
+            oldEcho <- hGetEcho stdin
+            hSetBuffering stdin NoBuffering
+            hSetEcho stdin False
+            return (oldBuffering, oldEcho)
+        restore (oldBuffering, oldEcho) = do
+            hSetBuffering stdin oldBuffering
+            hSetEcho stdin oldEcho
+
+withRawStdout :: IO a -> IO a
+withRawStdout = bracket uncook restore . const
+    where
+        uncook = do
+            oldBuffering <- hGetBuffering stdout
+            hSetBuffering stdout NoBuffering
+            return oldBuffering
+        restore = hSetBuffering stdout

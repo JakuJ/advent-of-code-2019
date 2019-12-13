@@ -15,7 +15,9 @@ module IntCode (
     supplyInputs,
     inputs,
     outputs,
-    memory
+    memory,
+    running,
+    current
 ) where
 
 import           Control.Lens             hiding (index)

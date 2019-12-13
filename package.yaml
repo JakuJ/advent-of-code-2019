@@ -27,6 +27,8 @@ dependencies:
 - template-haskell
 - directory
 - parallel
+- ansi-terminal
+- transformers
 
 library:
   source-dirs:

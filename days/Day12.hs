@@ -5,13 +5,14 @@
 
 module Day12 (part1, part2) where
 
+import ReadInput        (inputPath, readLines)
+
 import Control.Lens
 import Control.Parallel (par)
 import Data.Char        (isDigit)
 import Data.Function    (on)
 import Data.List        (splitAt)
 import Data.Text.Lazy   (Text, pack, splitOn, unpack)
-import ReadInput        (inputPath, readLines)
 
 type Vector = (Int, Int, Int)
 
