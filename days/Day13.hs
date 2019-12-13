@@ -89,7 +89,7 @@ gameLoop comp = do
     let keyCode = keyToPaddle x
     let newComp = execComputer . supplyInputs [keyCode] $ comp
     render newComp
-    gameLoop (newComp & outputs .~ [])
+    when (evalState current newComp /= 99) $ gameLoop (newComp & outputs .~ [])
 
 -- A BOT, 'CAUSE THE GAME IS TOO HARD FOR US PUNY HUMANS
 
@@ -130,6 +130,7 @@ playOnScreen loop = withRawStdout $ do
     hideCursor
     loop game
     showCursor
+    putStrLn ""
 
 playGame, watchBot :: IO ()
 playGame = playOnScreen gameLoop
