@@ -29,6 +29,7 @@ dependencies:
 - parallel
 - ansi-terminal
 - transformers
+- parsec
 
 library:
   source-dirs:
