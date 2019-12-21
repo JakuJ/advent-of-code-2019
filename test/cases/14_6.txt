@@ -1,8 +1,5 @@
-1 ORE => 1 A
-2 ORE => 2 B
-3 ORE => 3 C
-4 ORE => 1 D
-2 A, 2 B => 3 AB
-1 AB, 1 C => 1 ABC
-1 AB, 1 D => 1 ABD
-1 ABC, 1 ABD, 1AB => 1 FUEL
+1 A, 1 B, 1 C, 1 D => 1 FUEL
+1 B, 1 C, 1 D => 1 A
+1 C, 1 D => 1 B
+1 D => 1 C
+1 ORE => 1 D

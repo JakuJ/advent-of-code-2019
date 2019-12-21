@@ -30,6 +30,7 @@ dependencies:
 - ansi-terminal
 - transformers
 - parsec
+- vector
 
 library:
   source-dirs:
@@ -51,6 +52,7 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -eventlog
     dependencies:
     - advent2019
 

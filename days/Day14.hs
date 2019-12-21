@@ -77,6 +77,27 @@ step hm m
         outs = map (step' hm) $ M.toList rest
         (done, rest) = M.partitionWithKey (\name _ -> fromOre hm name) m
 
+paths :: HelperMap -> M.Map String Int
+paths hm = paths' hm "A"
+    where
+        paths' :: HelperMap -> String -> M.Map String Int
+        paths' hm name
+            | fromOre hm name = M.singleton "ORE" 1
+            | otherwise = M.unionsWith (+) $ ones : map (paths' hm) names
+                where
+                    ones = M.fromList [(n, 1) | n <- names]
+                    names = map fst infos
+                    (_, infos) = hm M.! name
+
+step1 :: HelperMap -> M.Map String Int -> M.Map String Int -> M.Map String Int
+step1 hm cm m
+    | M.null m = M.empty
+    | otherwise = M.unionsWith (+) [done, rest, step1 hm cm combined]
+    where
+        combined = M.unionsWith (+) outs
+        outs = map (step' hm) $ M.toList rest
+        (done, rest) = M.partitionWithKey (\name _ -> fromOre hm name) m
+
 getOre :: HelperMap -> Info -> Int
 getOre hm (name, n) = case hm M.! name of
     (b, [("ORE", a)]) -> minCreated a b n
@@ -85,14 +106,13 @@ getOre hm (name, n) = case hm M.! name of
 step2 :: HelperMap -> M.Map String Int -> Int
 step2 hm = M.foldlWithKey (\acc k v -> acc + getOre hm (k, v)) 0
 
--- solve1 :: FilePath -> IO ()
+solve1 :: FilePath -> IO Int
 solve1 path = do
     hm <- mkHelperMap <$> getLines path
     let m = step hm $ M.fromList [("FUEL", 1)]
-    print m
-    return (hm, m)
-    -- return $ step2 hm m
+    return $ step2 hm m
 
--- part1, part2 :: IO Int
-part1 = solve1 "test/cases/14_6.txt"
-part2 = part1
+-- TODO: solve
+part1, part2 :: IO Int
+part1 = return 0
+part2 = return 0

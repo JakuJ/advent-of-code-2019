@@ -2,3 +2,6 @@
 *~
 .hspec-failures
 *.hp
+*.ps
+*.aux
+*.eventlog

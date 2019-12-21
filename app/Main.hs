@@ -6,6 +6,7 @@ import Day11
 import Day12
 import Day13
 import Day14
+import Day16
 import Day2
 import Day3
 import Day4
@@ -36,4 +37,3 @@ main = do
         '2' -> Day13.playGame
         '3' -> Day13.watchBot
         _   -> return ()
-

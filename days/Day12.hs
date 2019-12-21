@@ -5,14 +5,14 @@
 
 module Day12 (part1, part2) where
 
-import ReadInput        (inputPath, readLines)
+import ReadInput                   (inputPath, readLines)
 
 import Control.Lens
-import Control.Parallel (par)
-import Data.Char        (isDigit)
-import Data.Function    (on)
-import Data.List        (splitAt)
-import Data.Text.Lazy   (Text, pack, splitOn, unpack)
+import Control.Parallel.Strategies (parMap, rseq)
+import Data.Char                   (isDigit)
+import Data.Function               (on)
+import Data.List                   (splitAt)
+import Data.Text.Lazy              (Text, pack, splitOn, unpack)
 
 type Vector = (Int, Int, Int)
 
@@ -91,12 +91,8 @@ stepWith pls sel = stepWith' sel (toSystem sel pls) 1 (timeStep pls)
             | toSystem sel pls == init = n
             | otherwise = stepWith' sel init (n + 1) (timeStep pls)
 
-parallelMap :: (a -> b) -> [a] -> [b]
-parallelMap f (x:xs) = let r = f x in r `par` r : parallelMap f xs
-parallelMap _ []     = []
-
 part2 :: IO Int
 part2 = do
     planets <- getInput
-    let dims = parallelMap (stepWith planets) [_1, _2, _3]
+    let dims = parMap rseq (stepWith planets) [_1, _2, _3]
     return $ foldl1 lcm dims
