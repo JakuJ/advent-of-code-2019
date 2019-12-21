@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6426ff5157081eb79a8b6d1b41cc22ce389d41c237d2d6da389c3c1a6daafb83
+-- hash: 5ced4d2861fded50e7dd2264616a4d8f7c193913726c749f6d040afc88757b7c
 
 name:           advent2019
 version:        0.1.0.0
@@ -94,7 +94,6 @@ test-suite unit
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Day14Spec
       DaysSpec
       IntCodeSpec
       Paths_advent2019

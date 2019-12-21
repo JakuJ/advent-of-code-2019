@@ -40,4 +40,5 @@ spec = parallel $ do
     testDay $(dayParts' 11) (1883, "APUGURFH")
     testDay $(dayParts' 12) (6735, 326489627728984)
     testDay $(dayParts' 13) (273, 13140)
+    testDay $(dayParts' 14) (654909, 2876992)
     testDay $(dayParts' 16) (29795507, 89568529)

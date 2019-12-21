@@ -1,12 +1,15 @@
-module Day14 (solve1, part1, part2) where
+module Day14 (part1, part2) where
 
-import           ReadInput        (inputPath, readLines)
+import           ReadInput           (inputPath, readLines)
 
 import           Control.Lens
-import           Data.Either      (fromRight)
-import qualified Data.Map         as M
-import           Debug.Trace
-import           Text.Parsec      hiding (Line)
+import           Control.Monad       (filterM)
+import           Control.Monad.State
+import           Data.Either         (fromRight)
+import           Data.List           (partition)
+import qualified Data.Map            as M
+import           Data.Maybe          (listToMaybe)
+import           Text.Parsec         hiding (Line, State)
 import           Text.Parsec.Char
 
 -- Parsing inputs
@@ -40,9 +43,11 @@ parseLine = do
 getLines :: FilePath -> IO [Line]
 getLines path = map (fromRight undefined . parse parseLine "undefined") <$> readLines path
 
--- model
+-- Data model
 
 type HelperMap = M.Map String (Int, [Info])
+type CountMap = M.Map String Int
+type Stash = M.Map String (Int, Int)
 
 mkHelperMap :: [Line] -> HelperMap
 mkHelperMap = foldl (\m (ls, (rname, batch)) -> M.insert rname (batch, ls) m) M.empty
@@ -58,29 +63,15 @@ minCreated :: Int -> Int -> Int -> Int
 minCreated _ _ 0 = 0
 minCreated a b n = minBatch b n * a `div` b
 
+-- is this substance made from ORE?
 fromOre :: HelperMap -> String -> Bool
 fromOre hm name = let (_, ins) = hm M.! name in "ORE" `elem` map fst ins
 
-step' :: HelperMap -> Info -> M.Map String Int
-step' hm (name, n) = M.fromList $ map (_2 %~ transformA) ins
+-- descending the dependency graph, how many times will we arrive at a given node?
+paths :: HelperMap -> CountMap
+paths hm = M.insert "FUEL" 1 $ paths' hm "FUEL"
     where
-        transformA a = minCreated a b actualN
-        actualN = minBatch b n
-        (b, ins) = hm M.! name
-
-step :: HelperMap -> M.Map String Int -> M.Map String Int
-step hm m
-    | M.null m = M.empty
-    | otherwise = M.unionsWith (+) [done, rest, step hm combined]
-    where
-        combined = M.unionsWith (+) outs
-        outs = map (step' hm) $ M.toList rest
-        (done, rest) = M.partitionWithKey (\name _ -> fromOre hm name) m
-
-paths :: HelperMap -> M.Map String Int
-paths hm = paths' hm "A"
-    where
-        paths' :: HelperMap -> String -> M.Map String Int
+        paths' :: HelperMap -> String -> CountMap
         paths' hm name
             | fromOre hm name = M.singleton "ORE" 1
             | otherwise = M.unionsWith (+) $ ones : map (paths' hm) names
@@ -89,30 +80,60 @@ paths hm = paths' hm "A"
                     names = map fst infos
                     (_, infos) = hm M.! name
 
-step1 :: HelperMap -> M.Map String Int -> M.Map String Int -> M.Map String Int
-step1 hm cm m
-    | M.null m = M.empty
-    | otherwise = M.unionsWith (+) [done, rest, step1 hm cm combined]
+data Factory = Factory {_helperMap :: HelperMap, _countMap :: CountMap, _stash :: Stash}
+    deriving Show
+
+makeLenses ''Factory
+
+-- can I simplify this substance?
+canSimplify :: (String, (a, Int)) -> State Factory Bool
+canSimplify (name, (_, mult)) = do
+    cm <- use countMap
+    return $ cm M.! name == mult && name /= "ORE"
+
+-- simplify a substance
+simplify :: State Factory Stash
+simplify = do
+    st <- use stash
+    -- find any substance in the stash I can simplify
+    substance <- fmap listToMaybe . filterM canSimplify $ M.assocs st
+    case substance of
+        Nothing -> use stash -- we can't simplify further
+        Just (name, (n, mult)) -> do
+            (b, ins) <- (M.! name) <$> use helperMap
+            let transformA a = (minCreated a b n, mult)
+            let produced = M.fromList $ map (_2 %~ transformA) ins
+            stash %= M.delete name
+            stash %= M.unionWith (\(a, b) (c, d) -> (a + c, b + d)) produced
+            simplify
+
+-- how much ORE do I need for this much fuel?
+solve :: HelperMap -> Int -> Int
+solve hm k = fst $ val M.! "ORE"
     where
-        combined = M.unionsWith (+) outs
-        outs = map (step' hm) $ M.toList rest
-        (done, rest) = M.partitionWithKey (\name _ -> fromOre hm name) m
+        factory = Factory hm (paths hm) $ M.singleton "FUEL" (k, 1)
+        val = evalState simplify factory
 
-getOre :: HelperMap -> Info -> Int
-getOre hm (name, n) = case hm M.! name of
-    (b, [("ORE", a)]) -> minCreated a b n
-    _                 -> 0
+part1 :: IO Int
+part1 = do
+    hm <- mkHelperMap <$> getLines $(inputPath)
+    return $ solve hm 1
 
-step2 :: HelperMap -> M.Map String Int -> Int
-step2 hm = M.foldlWithKey (\acc k v -> acc + getOre hm (k, v)) 0
+-- PART 2
 
-solve1 :: FilePath -> IO Int
-solve1 path = do
-    hm <- mkHelperMap <$> getLines path
-    let m = step hm $ M.fromList [("FUEL", 1)]
-    return $ step2 hm m
+binSearch :: HelperMap -> Int -> Int
+binSearch hm k = search hm 0 k
+    where
+        search hm a b
+            | canLeft && not canRight = n
+            | canLeft = search hm n b
+            | otherwise = search hm a n
+            where
+                n = (b + a) `div` 2
+                canLeft = solve hm n <= k
+                canRight = solve hm (n + 1) <= k
 
--- TODO: solve
-part1, part2 :: IO Int
-part1 = return 0
-part2 = return 0
+part2 :: IO Int
+part2 = do
+    hm <- mkHelperMap <$> getLines $(inputPath)
+    return $ binSearch hm 1000000000000
