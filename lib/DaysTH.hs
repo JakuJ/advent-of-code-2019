@@ -2,6 +2,7 @@
 
 module DaysTH (runAllDays, dayParts') where
 
+import Data.List                 (sort)
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import System.Directory          (listDirectory)
@@ -28,10 +29,10 @@ runDay n = [| let (part1, part2) = $(dayParts n) in do
     print =<< part2 |]
 
 -- Run all Day modules up to a given day
-runDays :: Int -> Q Exp
-runDays 0 = [| putStrLn "Solutions for Advent of Code 2019!" |]
-runDays n = [| $(runDays (n - 1)) >> $(runDay n) |]
+runDays :: [Int] -> Q Exp
+runDays [] = [| putStrLn "Solutions for Advent of Code 2019!" |]
+runDays (x:xs) = [| $(runDay x) >> $(runDays xs) |]
 
 -- Run all Day modules
 runAllDays :: Q Exp
-runAllDays = runDays =<< runIO (length <$> listDirectory "days")
+runAllDays = runDays =<< runIO (sort . map (read . drop 3 . takeWhile (/= '.')) <$> listDirectory "days")

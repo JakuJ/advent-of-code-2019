@@ -1,6 +1,8 @@
 # Advent of Code 2019
 
-Problems from Advent of Code 2019 solved in Haskell, now with Breakout!
+Most of the problems from Advent of Code 2019 solved in Haskell, including Breakout.
+
+With exams in December I didn't have time to finish all the puzzles. And then I burned out. What remains are solved puzzles up to 17.1, with an exception for day 15. Maybe I'll come back to this repo sometime in the future to finish it, but I doubt it.
 
 ## Installation
 
